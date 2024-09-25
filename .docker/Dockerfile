@@ -11,7 +11,7 @@ RUN addgroup -S isagrogroup && adduser -S isagrouser -G isagrogroup
 RUN apk add --no-cache python3 make g++ && ln -sf python3 /usr/bin/python
 
 # Copia o package.json e package-lock.json para o diretório de trabalho
-COPY package*.json ./
+COPY ../package*.json ./
 
 # Instala as dependências da aplicação
 RUN npm install --only=production
