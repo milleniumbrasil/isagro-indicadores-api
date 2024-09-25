@@ -2,7 +2,9 @@ version: '3.8'
 
 services:
   api:
-    build: .
+    build:
+      context: ..
+      dockerfile: .docker/Dockerfile
     container_name: isagro_api
     restart: always
     ports:
@@ -28,7 +30,7 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
     volumes:
-      - .././db_data:/var/lib/postgresql/data
+      - ../db_data:/var/lib/postgresql/data
       - ../init.sql:/docker-entrypoint-initdb.d/init.sql
     ports:
       - "5432:5432"
