@@ -1,0 +1,125 @@
+
+# bitbucket-pipelines.yml
+options:
+  size: 2x
+definitions:
+  services:
+    docker:
+      memory: 4096
+  steps:
+    - step: &SonarStep
+        name: "SonarQube Scanner"
+        image: sonarsource/sonar-scanner-cli:4.7
+        services:
+          - docker
+        script:
+          - SCRIPT_FILE=sonarqube.sh
+          - apk add curl jq -q
+          - export TOKEN=$(curl https://bitbucket.org/site/oauth2/access_token -d grant_type=client_credentials -u $CI_CREDENTIALS | jq .access_token)
+          - curl -H "Authorization":" Bearer '"$TOKEN"'" -L https://api.bitbucket.org/2.0/repositories/biud/cicd-source/src/1.0.0/${SCRIPT_FILE} -o ${SCRIPT_FILE}
+          - chmod +x ${SCRIPT_FILE} && ./${SCRIPT_FILE}
+    - step: &buildStep
+        name: "Build"
+        image: google/cloud-sdk:alpine
+        services:
+          - docker
+    - step: &deployStep
+        name: "Deploy"
+        image: alpine
+    - step: &createTagStep
+        name: "Create Tag"
+        image: alpine
+        script:
+          - SCRIPT_FILE=createTag.sh
+          - apk add curl jq -q
+          - export TOKEN=$(curl https://bitbucket.org/site/oauth2/access_token -d grant_type=client_credentials -u $CI_CREDENTIALS | jq .access_token)
+          - curl -H "Authorization":" Bearer '"$TOKEN"'" -L https://api.bitbucket.org/2.0/repositories/biud/cicd-source/src/1.0.0/${SCRIPT_FILE} -o ${SCRIPT_FILE}
+          - chmod +x ${SCRIPT_FILE} && ./${SCRIPT_FILE}
+pipelines:
+  # pull-requests:
+  #   "**":
+  #     - parallel:
+  #         - step:
+  #             name: "Run PHPUnit"
+  #             image: alpine
+  #             script:
+  #               - apt-get update && apt-get install -y unzip
+  #               - curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+  #               - composer install
+  #               - composer setup-test
+  #               - composer phpunit
+  #         - step:
+  #             name: "Run PHPStan"
+  #             image: alpine
+  #             script:
+  #               - apt-get update && apt-get install -y unzip
+  #               - curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+  #               - composer install
+  #               - composer setup-test
+  #               - composer phpstan
+  tags:
+    "*":
+      - parallel:
+          steps:
+            - step: *SonarStep
+            - step:
+                <<: *buildStep
+                script:
+                  - SCRIPT_FILE=build.sh
+                  - apk add curl jq -q
+                  - export TOKEN=$(curl https://bitbucket.org/site/oauth2/access_token -d grant_type=client_credentials -u $CI_CREDENTIALS | jq .access_token)
+                  - curl -H "Authorization":" Bearer '"$TOKEN"'" -L https://api.bitbucket.org/2.0/repositories/biud/cicd-source/src/1.0.0/${SCRIPT_FILE} -o ${SCRIPT_FILE}
+                  - chmod +x ${SCRIPT_FILE} && ./${SCRIPT_FILE}
+      - step:
+          <<: *deployStep
+          script:
+            - SCRIPT_FILE=deploy.sh
+            - apk add curl jq -q
+            - export TOKEN=$(curl https://bitbucket.org/site/oauth2/access_token -d grant_type=client_credentials -u $CI_CREDENTIALS | jq .access_token)
+            - curl -H "Authorization":" Bearer '"$TOKEN"'" -L https://api.bitbucket.org/2.0/repositories/biud/cicd-source/src/1.0.0/${SCRIPT_FILE} -o ${SCRIPT_FILE}
+            - chmod +x ${SCRIPT_FILE} && ./${SCRIPT_FILE}
+          trigger: manual
+  branches:
+    develop:
+      - parallel:
+          steps:
+            # - step: *SonarStep
+            - step:
+                <<: *buildStep
+                script:
+                  - SCRIPT_FILE=build.sh
+                  - apk add curl jq -q
+                  - export TOKEN=$(curl https://bitbucket.org/site/oauth2/access_token -d grant_type=client_credentials -u $CI_CREDENTIALS | jq .access_token)
+                  - curl -H "Authorization":" Bearer '"$TOKEN"'" -L https://api.bitbucket.org/2.0/repositories/biud/cicd-source/src/1.0.0/${SCRIPT_FILE} -o ${SCRIPT_FILE}
+                  - chmod +x ${SCRIPT_FILE} && ./${SCRIPT_FILE}
+      - step:
+          <<: *deployStep
+          script:
+            - SCRIPT_FILE=deploy.sh
+            - apk add curl jq -q
+            - export TOKEN=$(curl https://bitbucket.org/site/oauth2/access_token -d grant_type=client_credentials -u $CI_CREDENTIALS | jq .access_token)
+            - curl -H "Authorization":" Bearer '"$TOKEN"'" -L https://api.bitbucket.org/2.0/repositories/biud/cicd-source/src/1.0.0/${SCRIPT_FILE} -o ${SCRIPT_FILE}
+            - chmod +x ${SCRIPT_FILE} && ./${SCRIPT_FILE}
+    staging:
+      - parallel:
+          steps:
+            # - step: *SonarStep
+            - step:
+                <<: *buildStep
+                script:
+                  - SCRIPT_FILE=build.sh
+                  - apk add curl jq -q
+                  - export TOKEN=$(curl https://bitbucket.org/site/oauth2/access_token -d grant_type=client_credentials -u $CI_CREDENTIALS | jq .access_token)
+                  - curl -H "Authorization":" Bearer '"$TOKEN"'" -L https://api.bitbucket.org/2.0/repositories/biud/cicd-source/src/1.0.0/${SCRIPT_FILE} -o ${SCRIPT_FILE}
+                  - chmod +x ${SCRIPT_FILE} && ./${SCRIPT_FILE}
+      - step:
+          <<: *deployStep
+          script:
+            - SCRIPT_FILE=deploy.sh
+            - apk add curl jq -q
+            - export TOKEN=$(curl https://bitbucket.org/site/oauth2/access_token -d grant_type=client_credentials -u $CI_CREDENTIALS | jq .access_token)
+            - curl -H "Authorization":" Bearer '"$TOKEN"'" -L https://api.bitbucket.org/2.0/repositories/biud/cicd-source/src/1.0.0/${SCRIPT_FILE} -o ${SCRIPT_FILE}
+            - chmod +x ${SCRIPT_FILE} && ./${SCRIPT_FILE}
+          trigger: manual
+    "{master,main}":
+      - step: *createTagStep

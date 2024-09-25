@@ -1,0 +1,37 @@
+# Este campo no início de um arquivo Docker Compose especifica a versão do formato de arquivo Compose que estamos usando.
+version: '3.5'
+
+services:
+  # Este serviço configura um banco de dados PostgreSQL usando a imagem postgres oficial do Docker Hub. Ele define 
+  # a senha para o usuário postgres para postgres, cria um pgdata de volume nomeado para armazenar os dados do banco de dados 
+  # e mapeia a porta do contêiner 5432 para a porta do host 5432. A opção reiniciar: sempre garante que o contêiner será 
+  # reiniciado automaticamente se travar ou for interrompido.
+  db:
+    image: postgres:12
+    restart: always
+    environment:
+      - POSTGRES_PASSWORD=postgres
+    container_name: postgres
+    volumes:
+      - ./pgdata:/var/lib/postgresql/data-auth
+    ports:
+      - '5432:5432'
+
+  # Este serviço cria uma imagem Docker para o aplicativo NestJS usando o Dockerfile no diretório atual. Ele define o nome 
+  # do contêiner para nest-docker-postgres, define a variável de ambiente PORT para o valor da variável de ambiente PORT do host, 
+  # mapeia a porta do contêiner 3000 para a porta do host 3000 e monta o diretório src no host no diretório /app/src no contêiner. 
+  # A opção depends_on especifica que este serviço depende do serviço db, o que significa que o contêiner db será iniciado antes 
+  # do contêiner do aplicativo.
+  microservice:
+    build:
+      context: .
+      dockerfile: .ci/node/Dockerfile
+    container_name: auth
+    environment:
+      - PORT=${PORT}
+    ports:
+      - '3000:3000'
+    depends_on:
+      - db
+    volumes:
+      - ./src:/app/src

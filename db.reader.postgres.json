@@ -1,0 +1,120 @@
+{
+  "databaseName": "postgres",
+  "projectName": "Postgres",
+  "schema": [
+    {
+      "tableName": "tb_report",
+      "columns": [
+        {
+          "columnName": "id",
+          "dataType": "integer",
+          "characterMaximumLength": null,
+          "isNullable": false,
+          "isPrimaryKey": true,
+          "columnDefault": "nextval('tb_report_id_seq'::regclass)",
+          "columnComment": null
+        },
+        {
+          "columnName": "country",
+          "dataType": "character varying",
+          "characterMaximumLength": 2,
+          "isNullable": false,
+          "isPrimaryKey": false,
+          "columnDefault": null,
+          "columnComment": "Código do país no formato ISO 3166-1 alfa-2. Exemplo: BR para Brasil."
+        },
+        {
+          "columnName": "state",
+          "dataType": "character varying",
+          "characterMaximumLength": 2,
+          "isNullable": false,
+          "isPrimaryKey": false,
+          "columnDefault": null,
+          "columnComment": "Código do estado no formato ISO 3166-2. Exemplo: RJ para Rio de Janeiro."
+        },
+        {
+          "columnName": "city",
+          "dataType": "character varying",
+          "characterMaximumLength": 50,
+          "isNullable": false,
+          "isPrimaryKey": false,
+          "columnDefault": null,
+          "columnComment": "Nome da cidade relacionada ao registro."
+        },
+        {
+          "columnName": "source",
+          "dataType": "character varying",
+          "characterMaximumLength": 4000,
+          "isNullable": false,
+          "isPrimaryKey": false,
+          "columnDefault": null,
+          "columnComment": "Fonte de pesquisa ou instituição que forneceu os dados. Pode incluir fontes como OCDE, IAC, UNB, entre outras."
+        },
+        {
+          "columnName": "period",
+          "dataType": "date",
+          "characterMaximumLength": null,
+          "isNullable": false,
+          "isPrimaryKey": false,
+          "columnDefault": null,
+          "columnComment": "Data referente ao período em que os dados foram registrados."
+        },
+        {
+          "columnName": "label",
+          "dataType": "character varying",
+          "characterMaximumLength": 50,
+          "isNullable": false,
+          "isPrimaryKey": false,
+          "columnDefault": null,
+          "columnComment": "Rótulo que descreve o item pesquisado, como fertilizantes, cultura, etc."
+        },
+        {
+          "columnName": "value",
+          "dataType": "integer",
+          "characterMaximumLength": null,
+          "isNullable": false,
+          "isPrimaryKey": false,
+          "columnDefault": null,
+          "columnComment": "Valor numérico associado ao rótulo, representando a quantidade ou medida específica."
+        },
+        {
+          "columnName": "created_at",
+          "dataType": "timestamp without time zone",
+          "characterMaximumLength": null,
+          "isNullable": false,
+          "isPrimaryKey": false,
+          "columnDefault": "CURRENT_TIMESTAMP",
+          "columnComment": "Data de criação do registro."
+        },
+        {
+          "columnName": "updated_at",
+          "dataType": "timestamp without time zone",
+          "characterMaximumLength": null,
+          "isNullable": true,
+          "isPrimaryKey": false,
+          "columnDefault": "CURRENT_TIMESTAMP",
+          "columnComment": "Data de atualização do registro."
+        },
+        {
+          "columnName": "external_id",
+          "dataType": "uuid",
+          "characterMaximumLength": null,
+          "isNullable": false,
+          "isPrimaryKey": false,
+          "columnDefault": "uuid_generate_v4()",
+          "columnComment": "Identificador único externo de registros desta tabela. Este campo é obrigatório."
+        },
+        {
+          "columnName": "analysis",
+          "dataType": "character varying",
+          "characterMaximumLength": 4000,
+          "isNullable": false,
+          "isPrimaryKey": false,
+          "columnDefault": null,
+          "columnComment": "Tipo de análise referente ao registro, como erosão, GEE, NH3, NPK, orgânicas, pesticidas ou poluição."
+        }
+      ],
+      "relations": []
+    }
+  ]
+}
