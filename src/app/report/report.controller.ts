@@ -2,12 +2,12 @@ import { Controller, Get, NotFoundException, BadRequestException, InternalServer
   import { ApiTags, ApiOperation, ApiResponse, ApiParam, ApiQuery } from '@nestjs/swagger';
   import { ReportService } from './report.service';
   import { ReportQueryDTO, ReportPersistDTO } from './report.dto';
-  
+
   @ApiTags('report')
   @Controller('report')
   export class ReportController {
     constructor(private readonly reportService: ReportService) {}
-  
+
     @ApiOperation({
       summary: "Busca Reports pelo analysis, country, state e outros parâmetros opcionais.",
       description: "Este endpoint busca Reports na tabela TB_Report com base nos parâmetros fornecidos. Parâmetros obrigatórios: analysis, country, state.",
@@ -81,6 +81,5 @@ import { Controller, Get, NotFoundException, BadRequestException, InternalServer
         throw new NotFoundException('Nenhum Report encontrado');
       }
     }
-    
+
   }
-  
