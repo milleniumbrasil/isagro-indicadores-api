@@ -1,0 +1,32 @@
+version: '3.8'
+services:
+  postgres:
+    image: postgres:15
+    container_name: isagro_postgres
+    restart: always
+    environment:
+      POSTGRES_USER: ${DATABASE_USER}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
+      POSTGRES_DB: ${DATABASE_NAME}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - "5432:5432"
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: isagro_api
+    restart: always
+    env_file:  # Isso garante que o docker-compose use as variáveis definidas no arquivo .env
+      - .env
+    depends_on:
+      - postgres
+    ports:
+      - "${PORT}:3000"
+    command: npm run start:prod
+
+volumes:
+  postgres_data:
