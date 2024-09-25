@@ -7,6 +7,9 @@ WORKDIR /app
 # Adiciona um novo grupo e usuário
 RUN addgroup -S isagrogroup && adduser -S isagrouser -G isagrogroup
 
+# Instala dependências para o node-gyp, incluindo Python e build tools
+RUN apk add --no-cache python3 make g++ && ln -sf python3 /usr/bin/python
+
 # Copia o package.json e package-lock.json para o diretório de trabalho
 COPY package*.json ./
 
