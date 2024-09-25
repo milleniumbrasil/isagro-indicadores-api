@@ -1,32 +1,45 @@
 version: '3.8'
+
 services:
+  api:
+    build: .
+    container_name: isagro_api
+    restart: always
+    ports:
+      - "3001:3001"
+    environment:
+      - DATABASE_HOST=postgres
+      - DATABASE_PORT=5432
+      - DATABASE_NAME=postgres
+      - DATABASE_USER=postgres
+      - DATABASE_PASSWORD=postgres
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - isagro-net
+
   postgres:
-    image: postgres:15
+    image: postgres:latest
     container_name: isagro_postgres
     restart: always
     environment:
-      POSTGRES_USER: ${DATABASE_USER}
-      POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
-      POSTGRES_DB: ${DATABASE_NAME}
+      POSTGRES_DB: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - ./db_data:/var/lib/postgresql/data
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql
     ports:
       - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - isagro-net
 
-  api:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    container_name: isagro_api
-    restart: always
-    env_file:  # Isso garante que o docker-compose use as variáveis definidas no arquivo .env
-      - .env
-    depends_on:
-      - postgres
-    ports:
-      - "${PORT}:3000"
-    command: npm run start:prod
-
-volumes:
-  postgres_data:
+networks:
+  isagro-net:
+    driver: bridge
