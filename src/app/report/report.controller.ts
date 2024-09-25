@@ -10,7 +10,7 @@ import { Controller, Get, NotFoundException, BadRequestException, InternalServer
 
     @ApiOperation({
       summary: "Busca Reports pelo analysis, country, state e outros parâmetros opcionais.",
-      description: "Este endpoint busca Reports na tabela TB_Report com base nos parâmetros fornecidos. Parâmetros obrigatórios: analysis, country, state.",
+      description: "Este endpoint busca Reports na tabela TB_Report com base nos parâmetros fornecidos. Parâmetros obrigatórios: analysis.",
     })
     @ApiParam({
       name: 'analysis',
@@ -21,14 +21,14 @@ import { Controller, Get, NotFoundException, BadRequestException, InternalServer
     })
     @ApiParam({
       name: 'country',
-      required: true,
+      required: false,
       description: 'O país para o qual os dados devem ser retornados. Exemplo: BR para Brasil.',
       example: 'BR',
       enum: ['BR', 'US', 'FR'],
     })
     @ApiParam({
       name: 'state',
-      required: true,
+      required: false,
       description: 'O estado para o qual os dados devem ser retornados. Exemplo: SP para São Paulo.',
       example: 'SP',
       enum: ["AC", "AL", "AP", "AM", "BA", "CE", "DF", "ES", "GO", "MA", "MT", "MS", "MG", "PA", "PB", "PR", "PE", "PI", "RJ", "RN", "RS", "RO", "RR", "SC", "SP", "SE", "TO"],
