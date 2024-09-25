@@ -1,0 +1,13 @@
+# Ignore dirs:
+dist
+node_modules
+build
+**/node_modules/**
+
+# Ignore all listed files below:
+package.json
+package-lock.json
+README.md
+tsconfig.json
+webpack.config.js
+**/*.template.ts
