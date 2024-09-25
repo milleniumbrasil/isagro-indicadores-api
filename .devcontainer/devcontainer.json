@@ -12,5 +12,7 @@
       "terminal.integrated.shell.linux": "/bin/sh"
     },
     "postCreateCommand": "npm install",
-    "remoteUser": "isagrouser"
+    "remoteUser": "isagrouser",
+    "runServices": ["api", "postgres"],
+    "networkMode": "isagro-net"
   }
