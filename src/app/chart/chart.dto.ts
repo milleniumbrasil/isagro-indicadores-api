@@ -1,15 +1,15 @@
 import { IsString, IsNotEmpty, MaxLength, IsOptional, IsNumber, IsUUID, IsDate } from "class-validator";
 import { ApiProperty } from "@nestjs/swagger";
-import { IReportQueryDTO, IReportPersistDTO } from "./report.interface";
+import { IChartQueryDTO, IChartPersistDTO } from "./chart.interface";
 
 /**
- * Data Transfer Object for Report.
- * 
+ * Data Transfer Object for Chart.
+ *
  * Utilizado para transferir dados entre a camada de persistência e a camada de controle,
  * ocultando chaves primárias e datas automáticas, enquanto expõe os external_id e outras
  * informações de negócio relevantes.
  */
-export class ReportQueryDTO implements IReportQueryDTO {
+export class ChartQueryDTO implements IChartQueryDTO {
   @IsNotEmpty()
   @IsString()
   @MaxLength(2)
@@ -80,7 +80,7 @@ export class ReportQueryDTO implements IReportQueryDTO {
   analysis: string;
 }
 
-export class ReportPersistDTO implements IReportPersistDTO {
+export class ChartPersistDTO implements IChartPersistDTO {
   @IsNotEmpty()
   @IsString()
   @MaxLength(2)

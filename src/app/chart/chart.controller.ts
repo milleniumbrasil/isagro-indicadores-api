@@ -1,16 +1,16 @@
 import { Controller, Get, NotFoundException, BadRequestException, InternalServerErrorException, UseGuards, Query } from '@nestjs/common';
   import { ApiTags, ApiOperation, ApiResponse, ApiParam, ApiQuery } from '@nestjs/swagger';
-  import { ReportService } from './report.service';
-  import { ReportQueryDTO, ReportPersistDTO } from './report.dto';
+  import { ChartService } from './chart.service';
+  import { ChartQueryDTO, ChartPersistDTO } from './chart.dto';
 
-  @ApiTags('report')
-  @Controller('report')
-  export class ReportController {
-    constructor(private readonly reportService: ReportService) {}
+  @ApiTags('chart')
+  @Controller('chart')
+  export class ChartController {
+    constructor(private readonly chartService: ChartService) {}
 
     @ApiOperation({
-      summary: "Busca Reports pelo analysis, country, state e outros parâmetros opcionais.",
-      description: "Este endpoint busca Reports na tabela TB_Report com base nos parâmetros fornecidos. Parâmetros obrigatórios: analysis.",
+      summary: "Busca Charts pelo analysis, country, state e outros parâmetros opcionais.",
+      description: "Este endpoint busca Charts na tabela TB_Chart com base nos parâmetros fornecidos. Parâmetros obrigatórios: analysis.",
     })
     @ApiParam({
       name: 'analysis',
@@ -61,24 +61,24 @@ import { Controller, Get, NotFoundException, BadRequestException, InternalServer
     })
     @ApiResponse({
       status: 200,
-      description: 'Lista de Reports encontrados com base nos parâmetros fornecidos.',
-      type: [ReportQueryDTO],
+      description: 'Lista de Charts encontrados com base nos parâmetros fornecidos.',
+      type: [ChartQueryDTO],
     })
-    @ApiResponse({ status: 404, description: 'Nenhum Report encontrado com os parâmetros fornecidos.' })
-    @Get('/reports')
-    async findReports(
+    @ApiResponse({ status: 404, description: 'Nenhum Chart encontrado com os parâmetros fornecidos.' })
+    @Get('/charts')
+    async findCharts(
       @Query('analysis') analysis: string,
-      @Query('country') country: string,
-      @Query('state') state: string,
+      @Query('country') country?: string,
+      @Query('state') state?: string,
       @Query('period') period?: string,
       @Query('source') source?: string,
       @Query('city') city?: string,
       @Query('label') label?: string,
-    ): Promise<ReportQueryDTO[]> {
+    ): Promise<ChartQueryDTO[]> {
       try {
-        return await this.reportService.findByParams(analysis, country, state, period, source, city, label);
+        return await this.chartService.findByParams(analysis, country, state, period, source, city, label);
       } catch (error) {
-        throw new NotFoundException('Nenhum Report encontrado');
+        throw new NotFoundException('Nenhum Chart encontrado');
       }
     }
 

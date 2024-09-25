@@ -1,4 +1,4 @@
-import { ReportModule } from './report/report.module';
+import { ChartModule } from './chart/chart.module';
 
 import { join } from "path";
 import { Module } from "@nestjs/common";
@@ -16,7 +16,7 @@ import { HealthModule } from "./health/health.module";
       rootPath: join(__dirname, "..", "..", "public"),
     }),
     HealthModule,
-    ReportModule
+    ChartModule
   ],
 })
 export class AppModule {}

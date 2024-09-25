@@ -1,17 +1,17 @@
 import { Injectable, Logger, NotFoundException } from "@nestjs/common";
 import { DataSourceService } from "../config/datasource.service";
-import { ReportEntity } from "@app/entities/report";
-import { ReportQueryDTO } from "./report.dto";
+import { ChartEntity } from "../entities/chart";
+import { ChartQueryDTO } from "./chart.dto";
 
 @Injectable()
-export class ReportService {
+export class ChartService {
 
-  private readonly logger = new Logger(ReportService.name);
+  private readonly logger = new Logger(ChartService.name);
 
   constructor(private dataSourceService: DataSourceService) {}
 
-  async findByParams(analysis: string, country: string, state: string, period?: string, source?: string, city?: string, label?: string): Promise<ReportQueryDTO[]> {
-      this.logger.log(`Finding report with: ${analysis} ${country} ${state} ${period} ${source} ${city} ${label}`);
+  async findByParams(analysis: string, country: string, state: string, period?: string, source?: string, city?: string, label?: string): Promise<ChartQueryDTO[]> {
+      this.logger.log(`Finding chart with: ${analysis} ${country} ${state} ${period} ${source} ${city} ${label}`);
 
       // Montando o objeto where de forma dinâmica
       const whereConditions: any = {
@@ -36,22 +36,22 @@ export class ReportService {
       // Executando a busca com o repositório
       const entities = await this.dataSourceService
           .getDataSource()
-          .getRepository(ReportEntity)
+          .getRepository(ChartEntity)
           .find({
               where: whereConditions
           });
 
       if (!entities) {
-          throw new NotFoundException("Report not found");
+          throw new NotFoundException("Chart not found");
       }
 
       return this.toDTO(entities);
   }
 
-private toDTO(entities: ReportEntity[]): ReportQueryDTO[] {
+private toDTO(entities: ChartEntity[]): ChartQueryDTO[] {
     const result = entities.map(entity => {
       this.logger.log(`Mapping entity to DTO: ${entity.external_id}`);
-      const dto = new ReportQueryDTO();
+      const dto = new ChartQueryDTO();
       dto.country = entity.country;
       dto.state = entity.state;
       dto.city = entity.city;

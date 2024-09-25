@@ -1,4 +1,4 @@
-export interface IReportQueryDTO {
+export interface IChartQueryDTO {
   country: string;
   state: string;
   city: string;
@@ -10,7 +10,7 @@ export interface IReportQueryDTO {
   analysis: string;
 }
 
-export interface IReportPersistDTO {
+export interface IChartPersistDTO {
   country: string;
   state: string;
   city: string;

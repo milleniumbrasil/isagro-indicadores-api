@@ -29,7 +29,7 @@ async function bootstrap() {
     .getEnv()
     .get<string>("MICROSERVICE_NAME") || "Microservice";
 
-  const microserviceport = app
+  const microservicchart = app
     .get(EnvironmentService)
     .getEnv()
     .get<string>("PORT");
@@ -69,7 +69,7 @@ async function bootstrap() {
   }
 
   app.startAllMicroservices();
-  const PORT = process.env.PORT || microserviceport;
+  const PORT = process.env.PORT || microservicchart;
   await app.listen(PORT);
   try {
     const appUrl = await app.getUrl();

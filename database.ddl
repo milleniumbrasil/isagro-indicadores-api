@@ -34,7 +34,7 @@ CREATE FUNCTION public.prevent_created_at_update() RETURNS trigger
     $$;
 
 
-CREATE TABLE public.tb_report (
+CREATE TABLE public.tb_chart (
     id serial4 NOT NULL,
     country varchar(2) NOT NULL,
     state varchar(2) NOT NULL,
@@ -47,46 +47,46 @@ CREATE TABLE public.tb_report (
     updated_at timestamp DEFAULT CURRENT_TIMESTAMP NULL, -- Data de atualização do registro.
     external_id uuid DEFAULT uuid_generate_v4() NOT NULL, -- Identificador único externo de registros desta tabela. Este campo é obrigatório.
     analysis varchar(4000) NOT NULL,
-    CONSTRAINT tb_report_pkey PRIMARY KEY (id)
+    CONSTRAINT tb_chart_pkey PRIMARY KEY (id)
 );
-CREATE UNIQUE INDEX tb_report_external_id_idx ON public.tb_report USING btree (external_id);
+CREATE UNIQUE INDEX tb_chart_external_id_idx ON public.tb_chart USING btree (external_id);
 
 -- Table comment
 
-COMMENT ON TABLE public.tb_report IS 'Armazena dados relacionados ao projeto IS-AGRO, voltado para a exibição de painéis de informações sobre meio ambiente e agronomia no Brasil. Contém registros sobre diferentes tipos de análises, como erosão, GEE, NH3, NPK, orgânicas, pesticidas e poluição, organizados por localização geográfica e período.';
+COMMENT ON TABLE public.tb_chart IS 'Armazena dados relacionados ao projeto IS-AGRO, voltado para a exibição de painéis de informações sobre meio ambiente e agronomia no Brasil. Contém registros sobre diferentes tipos de análises, como erosão, GEE, NH3, NPK, orgânicas, pesticidas e poluição, organizados por localização geográfica e período.';
 
 -- Column comments
 
-COMMENT ON COLUMN public.tb_report.created_at IS 'Data de criação do registro.';
-COMMENT ON COLUMN public.tb_report.updated_at IS 'Data de atualização do registro.';
-COMMENT ON COLUMN public.tb_report.external_id IS 'Identificador único externo de registros desta tabela. Este campo é obrigatório.';
+COMMENT ON COLUMN public.tb_chart.created_at IS 'Data de criação do registro.';
+COMMENT ON COLUMN public.tb_chart.updated_at IS 'Data de atualização do registro.';
+COMMENT ON COLUMN public.tb_chart.external_id IS 'Identificador único externo de registros desta tabela. Este campo é obrigatório.';
 
 -- Table Triggers
 
-create trigger tb_report_fire_update_rules before
+create trigger tb_chart_fire_update_rules before
 update
     on
-    public.tb_report for each row execute function prevent_created_at_update();
-create trigger tb_report_fire_update_deleted_at_rules before
+    public.tb_chart for each row execute function prevent_created_at_update();
+create trigger tb_chart_fire_update_deleted_at_rules before
 update
     on
-    public.tb_report for each row execute function prevent_deleted_at_update();
+    public.tb_chart for each row execute function prevent_deleted_at_update();
 
-COMMENT ON COLUMN public.tb_report.country IS 'Código do país no formato ISO 3166-1 alfa-2. Exemplo: BR para Brasil.';
-COMMENT ON COLUMN public.tb_report.state IS 'Código do estado no formato ISO 3166-2. Exemplo: RJ para Rio de Janeiro.';
-COMMENT ON COLUMN public.tb_report.city IS 'Nome da cidade relacionada ao registro.';
-COMMENT ON COLUMN public.tb_report.source IS 'Fonte de pesquisa ou instituição que forneceu os dados. Pode incluir fontes como OCDE, IAC, UNB, entre outras.';
-COMMENT ON COLUMN public.tb_report.period IS 'Data referente ao período em que os dados foram registrados.';
-COMMENT ON COLUMN public.tb_report.label IS 'Rótulo que descreve o item pesquisado, como "fertilizantes", "cultura", etc.';
-COMMENT ON COLUMN public.tb_report.value IS 'Valor numérico associado ao rótulo, representando a quantidade ou medida específica.';
-COMMENT ON COLUMN public.tb_report.created_at IS 'Data de criação do registro.';
-COMMENT ON COLUMN public.tb_report.updated_at IS 'Data de atualização do registro.';
-COMMENT ON COLUMN public.tb_report.external_id IS 'Identificador único externo de registros desta tabela. Este campo é obrigatório.';
-COMMENT ON COLUMN public.tb_report.analysis IS 'Tipo de análise referente ao registro, como erosão, GEE, NH3, NPK, orgânicas, pesticidas ou poluição.';
+COMMENT ON COLUMN public.tb_chart.country IS 'Código do país no formato ISO 3166-1 alfa-2. Exemplo: BR para Brasil.';
+COMMENT ON COLUMN public.tb_chart.state IS 'Código do estado no formato ISO 3166-2. Exemplo: RJ para Rio de Janeiro.';
+COMMENT ON COLUMN public.tb_chart.city IS 'Nome da cidade relacionada ao registro.';
+COMMENT ON COLUMN public.tb_chart.source IS 'Fonte de pesquisa ou instituição que forneceu os dados. Pode incluir fontes como OCDE, IAC, UNB, entre outras.';
+COMMENT ON COLUMN public.tb_chart.period IS 'Data referente ao período em que os dados foram registrados.';
+COMMENT ON COLUMN public.tb_chart.label IS 'Rótulo que descreve o item pesquisado, como "fertilizantes", "cultura", etc.';
+COMMENT ON COLUMN public.tb_chart.value IS 'Valor numérico associado ao rótulo, representando a quantidade ou medida específica.';
+COMMENT ON COLUMN public.tb_chart.created_at IS 'Data de criação do registro.';
+COMMENT ON COLUMN public.tb_chart.updated_at IS 'Data de atualização do registro.';
+COMMENT ON COLUMN public.tb_chart.external_id IS 'Identificador único externo de registros desta tabela. Este campo é obrigatório.';
+COMMENT ON COLUMN public.tb_chart.analysis IS 'Tipo de análise referente ao registro, como erosão, GEE, NH3, NPK, orgânicas, pesticidas ou poluição.';
 
 
 -- Inserindo registros com a análise "erosão"
-INSERT INTO tb_report (country, state, city, period, label, value, source, analysis)
+INSERT INTO tb_chart (country, state, city, period, label, value, source, analysis)
 VALUES
 ('BR', 'RJ', 'Rio de Janeiro', '1990-01-01', 'cultura', 100, 'OCDE', 'erosão'),
 ('BR', 'SP', 'São Paulo', '1990-01-01', 'cultura', 150, 'IAC', 'erosão'),
@@ -134,7 +134,7 @@ VALUES
 ('BR', 'PR', 'Curitiba', '1995-01-01', 'pastagem', 9000, 'Lombardi', 'erosão');
 
 -- Inserindo registros com a análise "GEE"
-INSERT INTO tb_report (country, state, city, period, label, value, source, analysis)
+INSERT INTO tb_chart (country, state, city, period, label, value, source, analysis)
 VALUES
 ('BR', 'RJ', 'Rio de Janeiro', '1990-01-01', 'tecnologia1', 100, 'OCDE', 'GEE'),
 ('BR', 'SP', 'São Paulo', '1990-01-01', 'tecnologia4', 150, 'IAC', 'GEE'),
@@ -182,7 +182,7 @@ VALUES
 ('BR', 'PR', 'Curitiba', '1995-01-01', 'tecnologia2', 9000, 'Lombardi', 'GEE');
 
 -- Inserindo registros com a análise "NH3"
-INSERT INTO tb_report (country, state, city, period, label, value, source, analysis)
+INSERT INTO tb_chart (country, state, city, period, label, value, source, analysis)
 VALUES
 -- Dados de 1990
 ('BR', 'RJ', 'Rio de Janeiro', '1990-01-01', 'fertilizantes químicos', 100, 'OCDE', 'NH3'),
@@ -221,7 +221,7 @@ VALUES
 ('BR', 'PR', 'Curitiba', '1995-01-01', 'deposição de extretas', 9000, 'Lombardi', 'NH3');
 
 -- Inserindo registros com a análise "NPK"
-INSERT INTO tb_report (country, state, city, period, label, value, source, analysis)
+INSERT INTO tb_chart (country, state, city, period, label, value, source, analysis)
 VALUES
 -- Dados de 1990
 ('BR', 'RJ', 'Rio de Janeiro', '1990-01-01', 'dejetos animais', 100, 'OCDE', 'NPK'),
@@ -302,7 +302,7 @@ VALUES
 ('BR', 'GO', 'Goiânia', '1995-01-01', 'área agropecuária', 2100, 'OCDE', 'NPK');
 
 -- Inserindo registros com a análise "orgânicas"
-INSERT INTO tb_report (country, state, city, period, label, value, source, analysis)
+INSERT INTO tb_chart (country, state, city, period, label, value, source, analysis)
 VALUES
 -- Dados de 1990
 ('BR', 'RJ', 'Rio de Janeiro', '1990-01-01', 'grão', 100, 'OCDE', 'orgânicas'),
@@ -359,7 +359,7 @@ VALUES
 ('BR', 'PR', 'Curitiba', '1995-01-01', 'pastagem', 9000, 'Lombardi', 'orgânicas');
 
 -- Inserindo registros com a análise "pesticidas"
-INSERT INTO tb_report (country, state, city, period, label, value, source, analysis)
+INSERT INTO tb_chart (country, state, city, period, label, value, source, analysis)
 VALUES
 -- Dados de 1990
 ('BR', 'RJ', 'Rio de Janeiro', '1990-01-01', 'fungicidas', 100, 'OCDE', 'pesticidas'),
@@ -416,7 +416,7 @@ VALUES
 ('BR', 'PR', 'Curitiba', '1995-01-01', 'herbicidas', 9000, 'Lombardi', 'pesticidas');
 
 -- Inserindo registros com a análise "poluição"
-INSERT INTO tb_report (country, state, city, period, label, value, source, analysis)
+INSERT INTO tb_chart (country, state, city, period, label, value, source, analysis)
 VALUES
 -- Dados de 1990
 ('BR', 'RJ', 'Rio de Janeiro', '1990-01-01', 'fosfato', 100, 'OCDE', 'poluição'),
