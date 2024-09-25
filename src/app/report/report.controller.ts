@@ -1,120 +1,86 @@
-import { Controller, Get, Post, Put, Delete, Body, Param, NotFoundException, BadRequestException, InternalServerErrorException, UseGuards } from '@nestjs/common';
-  import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { Controller, Get, NotFoundException, BadRequestException, InternalServerErrorException, UseGuards, Query } from '@nestjs/common';
+  import { ApiTags, ApiOperation, ApiResponse, ApiParam, ApiQuery } from '@nestjs/swagger';
   import { ReportService } from './report.service';
   import { ReportQueryDTO, ReportPersistDTO } from './report.dto';
-  import { JwtAuthGuard } from '../middleware/jwt-auth.guard';
   
   @ApiTags('report')
   @Controller('report')
   export class ReportController {
     constructor(private readonly reportService: ReportService) {}
   
-    @Post()
-    @UseGuards(JwtAuthGuard)
     @ApiOperation({
-      summary: "Criação de um novo Report.",
-      description: "Este endpoint cria um novo Report no sistema com as informações fornecidas.",
+      summary: "Busca Reports pelo analysis, country, state e outros parâmetros opcionais.",
+      description: "Este endpoint busca Reports na tabela TB_Report com base nos parâmetros fornecidos. Parâmetros obrigatórios: analysis, country, state.",
     })
-    @ApiResponse({
-      status: 201,
-      description: 'O Report foi criado com sucesso.',
-      type: ReportQueryDTO,
+    @ApiParam({
+      name: 'analysis',
+      required: true,
+      description: 'O tipo de análise que deve ser retornada. Exemplo: erosão, GEE, NH3, etc.',
+      example: 'erosão',
+      enum: ['erosão', 'GEE', 'NH3', 'NPK', 'orgânicas', 'pesticidas', 'poluição'],
     })
-    @ApiResponse({ status: 400, description: 'Dados inválidos' })
-    @ApiResponse({ status: 409, description: 'Report já existe' })
-    @ApiResponse({ status: 500, description: 'Erro interno no servidor' })
-    async create(@Body() dto: ReportPersistDTO): Promise<ReportQueryDTO> {
-      try {
-        return await this.reportService.create(dto);
-      } catch (error) {
-        if (error.code === '23505') {
-          throw new BadRequestException('Report já existe');
-        }
-        throw new InternalServerErrorException('Erro ao criar Report');
-      }
-    }
-  
-    @Get(':external_id')
-    @UseGuards(JwtAuthGuard)
-    @ApiOperation({
-      summary: "Busca um Report pelo External ID.",
-      description: "Este endpoint busca um Report no sistema pelo External ID fornecido.",
+    @ApiParam({
+      name: 'country',
+      required: true,
+      description: 'O país para o qual os dados devem ser retornados. Exemplo: BR para Brasil.',
+      example: 'BR',
+      enum: ['BR', 'US', 'FR'],
+    })
+    @ApiParam({
+      name: 'state',
+      required: true,
+      description: 'O estado para o qual os dados devem ser retornados. Exemplo: SP para São Paulo.',
+      example: 'SP',
+      enum: ["AC", "AL", "AP", "AM", "BA", "CE", "DF", "ES", "GO", "MA", "MT", "MS", "MG", "PA", "PB", "PR", "PE", "PI", "RJ", "RN", "RS", "RO", "RR", "SC", "SP", "SE", "TO"],
+    })
+    @ApiQuery({
+      name: 'period',
+      required: false,
+      description: 'O período para o qual os dados devem ser retornados. Exemplo: 1990-1995.',
+      example: '1990-1995',
+      enum: ['1990-1995', '1992-1994', '1990-2010'],
+    })
+    @ApiQuery({
+      name: 'source',
+      required: false,
+      description: 'A fonte da qual os dados foram extraídos. Exemplo: OCDE, IAC, UNB, etc.',
+      example: 'OCDE',
+    })
+    @ApiQuery({
+      name: 'city',
+      required: false,
+      description: 'A cidade para a qual os dados devem ser retornados.',
+      example: 'Brasília',
+    })
+    @ApiQuery({
+      name: 'label',
+      required: false,
+      description: 'O rótulo que descreve o item pesquisado, como "fertilizantes", "nitrato", etc.',
+      example: 'nitrato',
+      enum: ['nitrato', 'fosfato', 'cations', 'anions'],
     })
     @ApiResponse({
       status: 200,
-      description: 'O Report foi encontrado.',
-      type: ReportQueryDTO,
-    })
-    @ApiResponse({ status: 404, description: 'Report não encontrado' })
-    async findByExternalId(@Param('external_id') external_id: string): Promise<ReportQueryDTO> {
-      try {
-        return await this.reportService.findByExternalId(external_id);
-      } catch (error) {
-        throw new NotFoundException('Report não encontrado');
-      }
-    }
-  
-    @Get()
-    @UseGuards(JwtAuthGuard)
-    @ApiOperation({
-      summary: "Busca todos os Reports.",
-      description: "Este endpoint busca todos os Reports cadastrados no sistema.",
-    })
-    @ApiResponse({
-      status: 200,
-      description: 'Lista de Reports.',
+      description: 'Lista de Reports encontrados com base nos parâmetros fornecidos.',
       type: [ReportQueryDTO],
     })
-    async findAll(): Promise<ReportQueryDTO[]> {
-      return await this.reportService.findAll();
-    }
-  
-    @Put(':external_id')
-    @UseGuards(JwtAuthGuard)
-    @ApiOperation({
-      summary: "Atualiza um Report pelo External ID.",
-      description: "Este endpoint atualiza os detalhes de um Report no sistema pelo External ID fornecido.",
-    })
-    @ApiResponse({
-      status: 200,
-      description: 'O Report foi atualizado com sucesso.',
-      type: ReportQueryDTO,
-    })
-    @ApiResponse({ status: 400, description: 'Dados inválidos' })
-    @ApiResponse({ status: 404, description: 'Report não encontrado' })
-    @ApiResponse({ status: 500, description: 'Erro interno no servidor' })
-    async updateByExternalId(@Param('external_id') external_id: string, @Body() dto: ReportPersistDTO): Promise<ReportQueryDTO> {
+    @ApiResponse({ status: 404, description: 'Nenhum Report encontrado com os parâmetros fornecidos.' })
+    @Get('/reports')
+    async findReports(
+      @Query('analysis') analysis: string,
+      @Query('country') country: string,
+      @Query('state') state: string,
+      @Query('period') period?: string,
+      @Query('source') source?: string,
+      @Query('city') city?: string,
+      @Query('label') label?: string,
+    ): Promise<ReportQueryDTO[]> {
       try {
-        return await this.reportService.updateByExternalId(external_id, dto);
+        return await this.reportService.findByParams(analysis, country, state, period, source, city, label);
       } catch (error) {
-        if (error instanceof NotFoundException) {
-          throw new NotFoundException('Report não encontrado');
-        }
-        throw new InternalServerErrorException('Erro ao atualizar Report');
+        throw new NotFoundException('Nenhum Report encontrado');
       }
     }
-  
-    @Delete(':external_id')
-    @UseGuards(JwtAuthGuard)
-    @ApiOperation({
-      summary: "Deleta um Report pelo External ID.",
-      description: "Este endpoint deleta um Report no sistema pelo External ID fornecido.",
-    })
-    @ApiResponse({
-      status: 204,
-      description: 'O Report foi deletado com sucesso.',
-    })
-    @ApiResponse({ status: 404, description: 'Report não encontrado' })
-    @ApiResponse({ status: 500, description: 'Erro interno no servidor' })
-    async deleteByExternalId(@Param('external_id') external_id: string): Promise<void> {
-      try {
-        await this.reportService.deleteByExternalId(external_id);
-      } catch (error) {
-        if (error instanceof NotFoundException) {
-          throw new NotFoundException('Report não encontrado');
-        }
-        throw new InternalServerErrorException('Erro ao deletar Report');
-      }
-    }
+    
   }
   

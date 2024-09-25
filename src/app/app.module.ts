@@ -5,8 +5,6 @@ import { Module } from "@nestjs/common";
 import { ConfigModule } from "@nestjs/config";
 import { ServeStaticModule } from "@nestjs/serve-static";
 import { HealthModule } from "./health/health.module";
-import { VersionModule } from "./version/version.module";
-import { JwtAuthGuardModule } from "./middleware/jwt-auth.guard.module";
 
 @Module({
   imports: [
@@ -17,8 +15,6 @@ import { JwtAuthGuardModule } from "./middleware/jwt-auth.guard.module";
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, "..", "..", "public"),
     }),
-    VersionModule,
-    JwtAuthGuardModule,
     HealthModule,
     ReportModule
   ],
