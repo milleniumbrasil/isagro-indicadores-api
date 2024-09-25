@@ -1,5 +1,5 @@
 {
-    "name": "Isagro Development Container",
+    "name": "Isagro Server Development Container",
     "dockerComposeFile": "../docker-compose.yaml",
     "service": "api",
     "workspaceFolder": "/app",
