@@ -1,7 +1,7 @@
 import { Controller, Get, NotFoundException, BadRequestException, InternalServerErrorException, UseGuards, Query } from '@nestjs/common';
   import { ApiTags, ApiOperation, ApiResponse, ApiParam, ApiQuery } from '@nestjs/swagger';
   import { ChartService } from './chart.service';
-  import { ChartQueryDTO, ChartPersistDTO } from './chart.dto';
+import { IStackedData } from './IStackedData';
 
   @ApiTags('chart')
   @Controller('chart')
@@ -62,7 +62,7 @@ import { Controller, Get, NotFoundException, BadRequestException, InternalServer
     @ApiResponse({
       status: 200,
       description: 'Lista de Charts encontrados com base nos parâmetros fornecidos.',
-      type: [ChartQueryDTO],
+      type: [IStackedData],
     })
     @ApiResponse({ status: 404, description: 'Nenhum Chart encontrado com os parâmetros fornecidos.' })
     @Get('/charts')
@@ -74,7 +74,7 @@ import { Controller, Get, NotFoundException, BadRequestException, InternalServer
       @Query('source') source?: string,
       @Query('city') city?: string,
       @Query('label') label?: string,
-    ): Promise<ChartQueryDTO[]> {
+    ): Promise<IStackedData[]> {
       try {
         return await this.chartService.findByParams(analysis, country, state, period, source, city, label);
       } catch (error) {

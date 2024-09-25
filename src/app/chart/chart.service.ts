@@ -1,7 +1,7 @@
 import { Injectable, Logger, NotFoundException } from "@nestjs/common";
 import { DataSourceService } from "../config/datasource.service";
 import { ChartEntity } from "../entities/chart";
-import { ChartQueryDTO } from "./chart.dto";
+import { IStackedData } from "./IStackedData";
 
 @Injectable()
 export class ChartService {
@@ -10,7 +10,14 @@ export class ChartService {
 
   constructor(private dataSourceService: DataSourceService) {}
 
-  async findByParams(analysis: string, country: string, state: string, period?: string, source?: string, city?: string, label?: string): Promise<ChartQueryDTO[]> {
+  	protected toStackedData(chart: ChartEntity[]): IStackedData[] {
+		return chart.map(item => ({
+			period: item.period,
+			entry: [item.label, item.value]
+		}));
+	}
+
+  async findByParams(analysis: string, country: string, state: string, period?: string, source?: string, city?: string, label?: string): Promise<IStackedData[]> {
       this.logger.log(`Finding chart with: ${analysis} ${country} ${state} ${period} ${source} ${city} ${label}`);
 
       // Montando o objeto where de forma dinâmica
@@ -45,25 +52,7 @@ export class ChartService {
           throw new NotFoundException("Chart not found");
       }
 
-      return this.toDTO(entities);
-  }
-
-private toDTO(entities: ChartEntity[]): ChartQueryDTO[] {
-    const result = entities.map(entity => {
-      this.logger.log(`Mapping entity to DTO: ${entity.external_id}`);
-      const dto = new ChartQueryDTO();
-      dto.country = entity.country;
-      dto.state = entity.state;
-      dto.city = entity.city;
-      dto.source = entity.source;
-      dto.period = entity.period;
-      dto.label = entity.label;
-      dto.value = entity.value;
-      dto.analysis = entity.analysis;
-      dto.external_id = entity.external_id;
-      return dto;
-    });
-    return result;
+      return this.toStackedData(entities);
   }
 
 }
