@@ -17,6 +17,10 @@ export class ChartService {
 		}));
 	}
 
+	public getAvailableSources(): string[] {
+		return ['OCDE', 'IAC', 'UNB'];
+	}
+
 	public getAvailableAnalyses(): string[] {
 		return ['erosão', 'GEE', 'NH3', 'NPK', 'orgânicas', 'pesticidas', 'poluição'];
 	}
@@ -79,47 +83,45 @@ export class ChartService {
         city?: string,
         source?: string,
     ): Promise<IStackedData[]> {
-        this.logger.log(`Finding annual stacked charts for analysis: ${analysis}, from ${startDate} to ${endDate}`);
-        const queryRunner = this.dataSourceService.getDataSource().createQueryRunner();
-        const parameters: any[] = [analysis, startDate, endDate];
+        this.logger.log(`Finding annual percnetage stacked charts for analysis=${analysis}, startDate=${startDate}, endDate=${endDate}, country=${country}, state=${state}, city=${city}, source=${source}`);
 
-        let whereClause = `WHERE analysis = ? AND periodo BETWEEN ? AND ?`;
+        const queryRunner = this.dataSourceService.getDataSource().createQueryRunner();
+
+        let whereClause = `WHERE tb_chart.analysis = '${analysis}' AND tb_chart.period BETWEEN '${startDate}' AND '${endDate}'`;
 
         if (country) {
-            whereClause += ` AND country = ?`;
-            parameters.push(country);
+            whereClause += ` AND tb_chart.country = '${country}'`;
         }
 
         if (state) {
-            whereClause += ` AND state = ?`;
-            parameters.push(state);
+            whereClause += ` AND tb_chart.state = '${state}'`;
         }
 
         if (city) {
-            whereClause += ` AND city = ?`;
-            parameters.push(city);
+            whereClause += ` AND tb_chart.city = '${city}'`;
         }
 
         if (source) {
-            whereClause += ` AND source = ?`;
-            parameters.push(source);
+            whereClause += ` AND tb_chart.source = '${source}'`;
         }
 
         const query = `
             SELECT
-                EXTRACT(YEAR FROM periodo) AS period_group,
+                EXTRACT(YEAR FROM tb_chart.period) AS period_group,
                 label,
-                ROUND(AVG(value), 2) AS average_value
+                ROUND(AVG(tb_chart.value), 2) AS average_value
             FROM
                 tb_chart
             ${whereClause}
             GROUP BY
-                EXTRACT(YEAR FROM periodo), label
+                EXTRACT(YEAR FROM tb_chart.period), tb_chart.label
             ORDER BY
-                period_group ASC, label ASC;
+                period_group ASC, tb_chart.label ASC;
         `;
 
-        const result = await queryRunner.query(query, parameters);
+		this.logger.log(`Query: ${query}`);
+
+        const result = await queryRunner.query(query);
         await queryRunner.release();
 
         if (!result || result.length === 0) {
@@ -141,47 +143,44 @@ export class ChartService {
         city?: string,
         source?: string,
     ): Promise<IStackedData[]> {
-        this.logger.log(`Finding biennial stacked charts for analysis: ${analysis}, from ${startDate} to ${endDate}`);
-        const queryRunner = this.dataSourceService.getDataSource().createQueryRunner();
-        const parameters: any[] = [analysis, startDate, endDate];
 
-        let whereClause = `WHERE analysis = ? AND periodo BETWEEN ? AND ?`;
+        this.logger.log(`Finding biennial percnetage stacked charts for analysis=${analysis}, startDate=${startDate}, endDate=${endDate}, country=${country}, state=${state}, city=${city}, source=${source}`);
+
+        const queryRunner = this.dataSourceService.getDataSource().createQueryRunner();
+
+        let whereClause = `WHERE tb_chart.analysis = '${analysis}' AND tb_chart.period BETWEEN '${startDate}' AND '${endDate}'`;
 
         if (country) {
-            whereClause += ` AND country = ?`;
-            parameters.push(country);
+            whereClause += ` AND tb_chart.country = '${country}'`;
         }
 
         if (state) {
-            whereClause += ` AND state = ?`;
-            parameters.push(state);
+            whereClause += ` AND tb_chart.state = '${state}'`;
         }
 
         if (city) {
-            whereClause += ` AND city = ?`;
-            parameters.push(city);
+            whereClause += ` AND tb_chart.city = '${city}'`;
         }
 
         if (source) {
-            whereClause += ` AND source = ?`;
-            parameters.push(source);
+            whereClause += ` AND tb_chart.source = '${source}'`;
         }
 
         const query = `
             SELECT
-                FLOOR(EXTRACT(YEAR FROM periodo) / 2) * 2 AS period_group,
+                FLOOR(EXTRACT(YEAR FROM period) / 2) * 2 AS period_group,
                 label,
                 ROUND(AVG(value), 2) AS average_value
             FROM
                 tb_chart
             ${whereClause}
             GROUP BY
-                FLOOR(EXTRACT(YEAR FROM periodo) / 2) * 2, label
+                FLOOR(EXTRACT(YEAR FROM period) / 2) * 2, label
             ORDER BY
                 period_group ASC, label ASC;
         `;
 
-        const result = await queryRunner.query(query, parameters);
+        const result = await queryRunner.query(query);
         await queryRunner.release();
 
         if (!result || result.length === 0) {
@@ -203,47 +202,43 @@ export class ChartService {
         city?: string,
         source?: string,
     ): Promise<IStackedData[]> {
-        this.logger.log(`Finding triennial stacked charts for analysis: ${analysis}, from ${startDate} to ${endDate}`);
-        const queryRunner = this.dataSourceService.getDataSource().createQueryRunner();
-        const parameters: any[] = [analysis, startDate, endDate];
+        this.logger.log(`Finding triennial percnetage stacked charts for analysis=${analysis}, startDate=${startDate}, endDate=${endDate}, country=${country}, state=${state}, city=${city}, source=${source}`);
 
-        let whereClause = `WHERE analysis = ? AND periodo BETWEEN ? AND ?`;
+        const queryRunner = this.dataSourceService.getDataSource().createQueryRunner();
+
+        let whereClause = `WHERE tb_chart.analysis = '${analysis}' AND tb_chart.period BETWEEN '${startDate}' AND '${endDate}'`;
 
         if (country) {
-            whereClause += ` AND country = ?`;
-            parameters.push(country);
+            whereClause += ` AND tb_chart.country = '${country}'`;
         }
 
         if (state) {
-            whereClause += ` AND state = ?`;
-            parameters.push(state);
+            whereClause += ` AND tb_chart.state = '${state}'`;
         }
 
         if (city) {
-            whereClause += ` AND city = ?`;
-            parameters.push(city);
+            whereClause += ` AND tb_chart.city = '${city}'`;
         }
 
         if (source) {
-            whereClause += ` AND source = ?`;
-            parameters.push(source);
+            whereClause += ` AND tb_chart.source = '${source}'`;
         }
 
         const query = `
             SELECT
-                FLOOR(EXTRACT(YEAR FROM periodo) / 3) * 3 AS period_group,
+                FLOOR(EXTRACT(YEAR FROM period) / 3) * 3 AS period_group,
                 label,
                 ROUND(AVG(value), 2) AS average_value
             FROM
                 tb_chart
             ${whereClause}
             GROUP BY
-                FLOOR(EXTRACT(YEAR FROM periodo) / 3) * 3, label
+                FLOOR(EXTRACT(YEAR FROM period) / 3) * 3, label
             ORDER BY
                 period_group ASC, label ASC;
         `;
 
-        const result = await queryRunner.query(query, parameters);
+        const result = await queryRunner.query(query);
         await queryRunner.release();
 
         if (!result || result.length === 0) {
@@ -265,47 +260,43 @@ export class ChartService {
         city?: string,
         source?: string,
     ): Promise<IStackedData[]> {
-        this.logger.log(`Finding quadrennial stacked charts for analysis: ${analysis}, from ${startDate} to ${endDate}`);
-        const queryRunner = this.dataSourceService.getDataSource().createQueryRunner();
-        const parameters: any[] = [analysis, startDate, endDate];
+        this.logger.log(`Finding quadrennial percnetage stacked charts for analysis=${analysis}, startDate=${startDate}, endDate=${endDate}, country=${country}, state=${state}, city=${city}, source=${source}`);
 
-        let whereClause = `WHERE analysis = ? AND periodo BETWEEN ? AND ?`;
+        const queryRunner = this.dataSourceService.getDataSource().createQueryRunner();
+
+        let whereClause = `WHERE tb_chart.analysis = '${analysis}' AND tb_chart.period BETWEEN '${startDate}' AND '${endDate}'`;
 
         if (country) {
-            whereClause += ` AND country = ?`;
-            parameters.push(country);
+            whereClause += ` AND tb_chart.country = '${country}'`;
         }
 
         if (state) {
-            whereClause += ` AND state = ?`;
-            parameters.push(state);
+            whereClause += ` AND tb_chart.state = '${state}'`;
         }
 
         if (city) {
-            whereClause += ` AND city = ?`;
-            parameters.push(city);
+            whereClause += ` AND tb_chart.city = '${city}'`;
         }
 
         if (source) {
-            whereClause += ` AND source = ?`;
-            parameters.push(source);
+            whereClause += ` AND tb_chart.source = '${source}'`;
         }
 
         const query = `
             SELECT
-                FLOOR(EXTRACT(YEAR FROM periodo) / 4) * 4 AS period_group,
+                FLOOR(EXTRACT(YEAR FROM period) / 4) * 4 AS period_group,
                 label,
                 ROUND(AVG(value), 2) AS average_value
             FROM
                 tb_chart
             ${whereClause}
             GROUP BY
-                FLOOR(EXTRACT(YEAR FROM periodo) / 4) * 4, label
+                FLOOR(EXTRACT(YEAR FROM period) / 4) * 4, label
             ORDER BY
                 period_group ASC, label ASC;
         `;
 
-        const result = await queryRunner.query(query, parameters);
+        const result = await queryRunner.query(query);
         await queryRunner.release();
 
         if (!result || result.length === 0) {
@@ -327,47 +318,44 @@ export class ChartService {
         city?: string,
         source?: string,
     ): Promise<IStackedData[]> {
-        this.logger.log(`Finding quintennial stacked charts for analysis: ${analysis}, from ${startDate} to ${endDate}`);
-        const queryRunner = this.dataSourceService.getDataSource().createQueryRunner();
-        const parameters: any[] = [analysis, startDate, endDate];
 
-        let whereClause = `WHERE analysis = ? AND periodo BETWEEN ? AND ?`;
+        this.logger.log(`Finding quintennial percnetage stacked charts for analysis=${analysis}, startDate=${startDate}, endDate=${endDate}, country=${country}, state=${state}, city=${city}, source=${source}`);
+
+        const queryRunner = this.dataSourceService.getDataSource().createQueryRunner();
+
+        let whereClause = `WHERE tb_chart.analysis = '${analysis}' AND tb_chart.period BETWEEN '${startDate}' AND '${endDate}'`;
 
         if (country) {
-            whereClause += ` AND country = ?`;
-            parameters.push(country);
+            whereClause += ` AND tb_chart.country = '${country}'`;
         }
 
         if (state) {
-            whereClause += ` AND state = ?`;
-            parameters.push(state);
+            whereClause += ` AND tb_chart.state = '${state}'`;
         }
 
         if (city) {
-            whereClause += ` AND city = ?`;
-            parameters.push(city);
+            whereClause += ` AND tb_chart.city = '${city}'`;
         }
 
         if (source) {
-            whereClause += ` AND source = ?`;
-            parameters.push(source);
+            whereClause += ` AND tb_chart.source = '${source}'`;
         }
 
         const query = `
             SELECT
-                FLOOR(EXTRACT(YEAR FROM periodo) / 5) * 5 AS period_group,
+                FLOOR(EXTRACT(YEAR FROM period) / 5) * 5 AS period_group,
                 label,
                 ROUND(AVG(value), 2) AS average_value
             FROM
                 tb_chart
             ${whereClause}
             GROUP BY
-                FLOOR(EXTRACT(YEAR FROM periodo) / 5) * 5, label
+                FLOOR(EXTRACT(YEAR FROM period) / 5) * 5, label
             ORDER BY
                 period_group ASC, label ASC;
         `;
 
-        const result = await queryRunner.query(query, parameters);
+        const result = await queryRunner.query(query);
         await queryRunner.release();
 
         if (!result || result.length === 0) {
@@ -394,7 +382,7 @@ export class ChartService {
         const queryRunner = this.dataSourceService.getDataSource().createQueryRunner();
         const parameters: any[] = [analysis, startDate, endDate];
 
-        let whereClause = `WHERE analysis = ? AND periodo BETWEEN ? AND ?`;
+        let whereClause = `WHERE analysis = ? AND period BETWEEN ? AND ?`;
 
         if (country) {
             whereClause += ` AND country = ?`;
@@ -418,14 +406,14 @@ export class ChartService {
 
         const query = `
             SELECT
-                EXTRACT(YEAR FROM periodo) AS period_group,
+                EXTRACT(YEAR FROM period) AS period_group,
                 label,
                 SUM(value) AS total_value
             FROM
                 tb_chart
             ${whereClause}
             GROUP BY
-                EXTRACT(YEAR FROM periodo), label
+                EXTRACT(YEAR FROM period), label
             ORDER BY
                 period_group ASC, label ASC;
         `;
@@ -456,7 +444,7 @@ export class ChartService {
         const queryRunner = this.dataSourceService.getDataSource().createQueryRunner();
         const parameters: any[] = [analysis, startDate, endDate];
 
-        let whereClause = `WHERE analysis = ? AND periodo BETWEEN ? AND ?`;
+        let whereClause = `WHERE analysis = ? AND period BETWEEN ? AND ?`;
 
         if (country) {
             whereClause += ` AND country = ?`;
@@ -480,14 +468,14 @@ export class ChartService {
 
         const query = `
             SELECT
-                FLOOR(EXTRACT(YEAR FROM periodo) / 2) * 2 AS period_group,
+                FLOOR(EXTRACT(YEAR FROM period) / 2) * 2 AS period_group,
                 label,
                 SUM(value) AS total_value
             FROM
                 tb_chart
             ${whereClause}
             GROUP BY
-                FLOOR(EXTRACT(YEAR FROM periodo) / 2) * 2, label
+                FLOOR(EXTRACT(YEAR FROM period) / 2) * 2, label
             ORDER BY
                 period_group ASC, label ASC;
         `;
@@ -518,7 +506,7 @@ export class ChartService {
         const queryRunner = this.dataSourceService.getDataSource().createQueryRunner();
         const parameters: any[] = [analysis, startDate, endDate];
 
-        let whereClause = `WHERE analysis = ? AND periodo BETWEEN ? AND ?`;
+        let whereClause = `WHERE analysis = ? AND period BETWEEN ? AND ?`;
 
         if (country) {
             whereClause += ` AND country = ?`;
@@ -542,14 +530,14 @@ export class ChartService {
 
         const query = `
             SELECT
-                FLOOR(EXTRACT(YEAR FROM periodo) / 3) * 3 AS period_group,
+                FLOOR(EXTRACT(YEAR FROM period) / 3) * 3 AS period_group,
                 label,
                 SUM(value) AS total_value
             FROM
                 tb_chart
             ${whereClause}
             GROUP BY
-                FLOOR(EXTRACT(YEAR FROM periodo) / 3) * 3, label
+                FLOOR(EXTRACT(YEAR FROM period) / 3) * 3, label
             ORDER BY
                 period_group ASC, label ASC;
         `;
@@ -580,7 +568,7 @@ export class ChartService {
         const queryRunner = this.dataSourceService.getDataSource().createQueryRunner();
         const parameters: any[] = [analysis, startDate, endDate];
 
-        let whereClause = `WHERE analysis = ? AND periodo BETWEEN ? AND ?`;
+        let whereClause = `WHERE analysis = ? AND period BETWEEN ? AND ?`;
 
         if (country) {
             whereClause += ` AND country = ?`;
@@ -604,14 +592,14 @@ export class ChartService {
 
         const query = `
             SELECT
-                FLOOR(EXTRACT(YEAR FROM periodo) / 4) * 4 AS period_group,
+                FLOOR(EXTRACT(YEAR FROM period) / 4) * 4 AS period_group,
                 label,
                 SUM(value) AS total_value
             FROM
                 tb_chart
             ${whereClause}
             GROUP BY
-                FLOOR(EXTRACT(YEAR FROM periodo) / 4) * 4, label
+                FLOOR(EXTRACT(YEAR FROM period) / 4) * 4, label
             ORDER BY
                 period_group ASC, label ASC;
         `;
@@ -642,7 +630,7 @@ export class ChartService {
         const queryRunner = this.dataSourceService.getDataSource().createQueryRunner();
         const parameters: any[] = [analysis, startDate, endDate];
 
-        let whereClause = `WHERE analysis = ? AND periodo BETWEEN ? AND ?`;
+        let whereClause = `WHERE analysis = ? AND period BETWEEN ? AND ?`;
 
         if (country) {
             whereClause += ` AND country = ?`;
@@ -666,14 +654,14 @@ export class ChartService {
 
         const query = `
             SELECT
-                FLOOR(EXTRACT(YEAR FROM periodo) / 5) * 5 AS period_group,
+                FLOOR(EXTRACT(YEAR FROM period) / 5) * 5 AS period_group,
                 label,
                 SUM(value) AS total_value
             FROM
                 tb_chart
             ${whereClause}
             GROUP BY
-                FLOOR(EXTRACT(YEAR FROM periodo) / 5) * 5, label
+                FLOOR(EXTRACT(YEAR FROM period) / 5) * 5, label
             ORDER BY
                 period_group ASC, label ASC;
         `;
