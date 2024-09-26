@@ -136,40 +136,33 @@ export class ChartService {
 		const whereClause = this.getWhereClause(analysis, label, startDate, endDate, country, state, city, source);
 
         const query = `
-            WITH PeriodTotals AS (
-				SELECT
-					EXTRACT(YEAR FROM tb_chart.period) AS period_group,
-					SUM(value) AS total_value_period
-				FROM
-					tb_chart
-            	${whereClause}
-				GROUP BY
-					EXTRACT(YEAR FROM tb_chart.period)
-			)
-			SELECT
-				X.period_group,
-				X.label,
-				X.total_value,
-				X.total_count,
-				PT.total_value_period,
-				ROUND((X.total_value::numeric / PT.total_value_period::numeric) * 100, 2) AS percentual
-			FROM (
-				SELECT
-					EXTRACT(YEAR FROM tb_chart.period) AS period_group,
-					tb_chart.label,
-					SUM(value) AS total_value,
-					COUNT(value) AS total_count
-				FROM
-					tb_chart
-            	${whereClause}
-				GROUP BY
-					EXTRACT(YEAR FROM tb_chart.period), tb_chart.label
-				ORDER BY
-					period_group ASC, tb_chart.label ASC
-			) AS X
-			JOIN PeriodTotals PT ON X.period_group = PT.period_group
-			ORDER BY
-				X.period_group ASC, X.label ASC;
+					SELECT
+						Report.start_period_group,
+						Report.end_period_group,
+						Report.total_value,
+						Report.total_count,
+						ROUND((Report.total_value / NULLIF(TotalSum.total_value_all_periods, 0)) * 100, 2) AS percentual_total
+					FROM (
+						SELECT
+							EXTRACT(YEAR FROM tb_chart.period) AS start_period_group,
+							EXTRACT(YEAR FROM tb_chart.period) AS end_period_group,
+							SUM(tb_chart.value) AS total_value,
+							COUNT(tb_chart.value) AS total_count
+						FROM
+							tb_chart
+									${whereClause}
+						GROUP BY
+							EXTRACT(YEAR FROM tb_chart.period)
+					) AS Report
+					CROSS JOIN (
+						SELECT
+							SUM(CAST(tb_chart.value AS DECIMAL)) AS total_value_all_periods
+						FROM
+							tb_chart
+									${whereClause}
+					) AS TotalSum
+					ORDER BY
+						Report.start_period_group ASC;
         `;
 
         const result = await queryRunner.query(query);
@@ -179,10 +172,12 @@ export class ChartService {
             throw new NotFoundException('Nenhum dado encontrado para o período especificado');
         }
 
-        return result.map((item: any) => ({
-            period: item.period_group,
-            entry: [item.label, item.percentual],
+        const stackedData = result.map((item: any) => ({
+            period: item.start_period_group,
+            entry: [analysis, item.percentual_total],
         }));
+
+		return stackedData;
     }
 
     async findPercentageBiennial(
