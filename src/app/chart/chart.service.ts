@@ -234,8 +234,6 @@ export class ChartService {
 
 
         const result = await queryRunner.query(query);
-		this.logger.log(`Result: ${JSON.stringify(result, null, 2)}`);
-
         await queryRunner.release();
 
         if (!result || result.length === 0) {
@@ -246,8 +244,6 @@ export class ChartService {
             period: `${item.start_period_group}-${item.end_period_group}`,
             entry: [analysis, item.percentual_total],
         }));
-		
-		this.logger.log(`StackedData: ${JSON.stringify(stackedData, null, 2)}`);
 
 		return stackedData;
     }
