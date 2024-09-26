@@ -6,137 +6,185 @@ import { Between } from "typeorm";
 
 @Injectable()
 export class ChartService {
+	private readonly logger = new Logger(ChartService.name);
 
-    private readonly logger = new Logger(ChartService.name);
+	constructor(private dataSourceService: DataSourceService) { }
 
-    constructor(private dataSourceService: DataSourceService) { }
+	protected toStackedData(chart: ChartEntity[]): IStackedData[] {
+		return chart.map(item => ({
+			period: item.period,
+			entry: [item.label, item.value]
+		}));
+	}
 
-    protected toStackedData(chart: ChartEntity[]): IStackedData[] {
-        return chart.map(item => ({
-            period: item.period,
-            entry: [item.label, item.value]
-        }));
-    }
+	public getErosoesValidLabels(): string[] {
+		return ['pastagem', 'cultura'];
+	}
 
-    async findStackedByDates(
-        analysis: string,
-        startDate: string,
-        endDate: string,
-        country?: string,
-        state?: string,
-        city?: string,
-        source?: string,
-        period: 'annual' | 'biennial' | 'triennial' | 'quadrennial' | 'quintennial' = 'annual',
-    ): Promise<IStackedData[]> {
-        this.logger.log(`Finding stacked charts for analysis: ${analysis}, period: ${period}, from ${startDate} to ${endDate}`);
+	public getGEEValidLabels(): string[] {
+		return ['tecnologia2', 'tecnologia1', 'tecnologia3', 'tecnologia4'];
+	}
 
-        // Montando o objeto where de forma dinâmica
-        const whereConditions: any = {
-            analysis,
-            date: Between(startDate, endDate),
-        };
+	public getNH3ValidLabels(): string[] {
+		return ['fertilizantes químicos', 'fertilizantes orgânicos', 'manejo de esterco', 'deposição de extretas', 'queimas de resíduos de culturas'];
+	}
 
-        if (country) {
-            whereConditions.country = country;
-        }
-        if (state) {
-            whereConditions.state = state;
-        }
-        if (city) {
-            whereConditions.city = city;
-        }
-        if (source) {
-            whereConditions.source = source;
-        }
+	public getNPKValidLabels(): string[] {
+		return ['dejetos animais', 'deposição atmosférica', 'fertilizantes minerais', 'fertilizantes orgânicos', 'fixação biológica de nitrogênio', 'resíduos culturais', 'resíduos industriais', 'resíduos urbanos', 'produção carne bovina', 'produção agrícola', 'área agropecuária'];
+	}
 
-        // Calculando o agrupamento e percentuais baseado no período solicitado
-        let groupBy: string;
-        switch (period) {
-            case 'biennial':
-                groupBy = `FLOOR(EXTRACT(YEAR FROM date) / 2) * 2`; // Agrupamento bianual
-                break;
-            case 'triennial':
-                groupBy = `FLOOR(EXTRACT(YEAR FROM date) / 3) * 3`; // Agrupamento trianual
-                break;
-            case 'quadrennial':
-                groupBy = `FLOOR(EXTRACT(YEAR FROM date) / 4) * 4`; // Agrupamento quadrianuais
-                break;
-            case 'quintennial':
-                groupBy = `FLOOR(EXTRACT(YEAR FROM date) / 5) * 5`; // Agrupamento pentanuais
-                break;
-            case 'annual':
-            default:
-                groupBy = `EXTRACT(YEAR FROM date)`; // Agrupamento anual
-                break;
-        }
+	public getOrganicasValidLabels(): string[] {
+		return ['grão', 'hortaliças', 'fruticultura', 'pastagem'];
+	}
 
-        const queryBuilder = this.dataSourceService
-            .getDataSource()
-            .getRepository(ChartEntity)
-            .createQueryBuilder('chart')
-            .select([
-                `ROUND(AVG(chart.value), 2) AS value`,
-                `${groupBy} AS period`,
-                'chart.label',
-            ])
-            .where(whereConditions)
-            .groupBy(groupBy)
-            .addGroupBy('chart.label');
+	public getPesticidasValidLabels(): string[] {
+		return ['herbicidas', 'fungicidas', 'inseticitas', 'outros'];
+	}
 
-        const result = await queryBuilder.getRawMany();
+	public getPoluicoesValidLabels(): string[] {
+		return ['nitrato', 'fosfato', 'cations', 'anions'];
+	}
 
-        if (!result.length) {
-            throw new NotFoundException('Nenhum chart encontrado');
-        }
+	getValidLabelsByAnalysis(analysis: string): string[] {
+		switch (analysis.toLowerCase()) {
+			case 'erosão':
+				return this.getErosoesValidLabels();
+			case 'gee':
+				return this.getGEEValidLabels();
+			case 'nh3':
+				return this.getNH3ValidLabels();
+			case 'npk':
+				return this.getNPKValidLabels();
+			case 'orgânicas':
+				return this.getOrganicasValidLabels();
+			case 'pesticidas':
+				return this.getPesticidasValidLabels();
+			case 'poluição':
+				return this.getPoluicoesValidLabels();
+			default:
+				return null; // Retorna null para análises não reconhecidas
+		}
+	}
 
-        return result.map(item => ({
-            period: item.period,
-            entry: [item.label, item.value],
-        }));
-    }
+	async findStackedByDates(
+		analysis: string,
+		startDate: string,
+		endDate: string,
+		country?: string,
+		state?: string,
+		city?: string,
+		source?: string,
+		period: 'annual' | 'biennial' | 'triennial' | 'quadrennial' | 'quintennial' = 'annual',
+	): Promise<IStackedData[]> {
+		this.logger.log(`Finding stacked charts for analysis: ${analysis}, period: ${period}, from ${startDate} to ${endDate}`);
 
-    async findPercentageByDates(
-        analysis: string,
-        startDate: string,
-        endDate: string,
-        country?: string,
-        state?: string,
-        city?: string,
-        source?: string,
-        periodType?: string,
-    ): Promise<IStackedData[]> {
-        this.logger.log(`Calculating percentages for analysis: ${analysis}, period: ${startDate} to ${endDate}`);
+		// Montando o objeto where de forma dinâmica
+		const whereConditions: any = {
+			analysis,
+			date: Between(startDate, endDate),
+		};
 
-        // Converte as strings de datas para objetos Date
-        const start = new Date(startDate);
-        const end = new Date(endDate);
+		if (country) {
+			whereConditions.country = country;
+		}
+		if (state) {
+			whereConditions.state = state;
+		}
+		if (city) {
+			whereConditions.city = city;
+		}
+		if (source) {
+			whereConditions.source = source;
+		}
 
-        // Realiza o processamento dos dados baseado nas datas e no período fornecido
-        // Exemplo simplificado de uma consulta de percentuais baseada em datas
+		// Calculando o agrupamento e percentuais baseado no período solicitado
+		let groupBy: string;
+		switch (period) {
+			case 'biennial':
+				groupBy = `FLOOR(EXTRACT(YEAR FROM date) / 2) * 2`; // Agrupamento bianual
+				break;
+			case 'triennial':
+				groupBy = `FLOOR(EXTRACT(YEAR FROM date) / 3) * 3`; // Agrupamento trianual
+				break;
+			case 'quadrennial':
+				groupBy = `FLOOR(EXTRACT(YEAR FROM date) / 4) * 4`; // Agrupamento quadrianuais
+				break;
+			case 'quintennial':
+				groupBy = `FLOOR(EXTRACT(YEAR FROM date) / 5) * 5`; // Agrupamento pentanuais
+				break;
+			case 'annual':
+			default:
+				groupBy = `EXTRACT(YEAR FROM date)`; // Agrupamento anual
+				break;
+		}
 
-        // Você pode construir a lógica para calcular os percentuais anuais, bianuais, etc.
-        // com base nas datas convertidas e ajustar a lógica do repositório abaixo.
+		const queryBuilder = this.dataSourceService
+			.getDataSource()
+			.getRepository(ChartEntity)
+			.createQueryBuilder('chart')
+			.select([
+				`ROUND(AVG(chart.value), 2) AS value`,
+				`${groupBy} AS period`,
+				'chart.label',
+			])
+			.where(whereConditions)
+			.groupBy(groupBy)
+			.addGroupBy('chart.label');
 
-        const entities = await this.dataSourceService
-            .getDataSource()
-            .getRepository(ChartEntity)
-            .find({
-                where: {
-                    analysis,
-                    country,
-                    state,
-                    city,
-                    source,
-                    // Aqui você aplicaria as datas conforme a lógica que deseja para o cálculo de percentuais
-                    // Por exemplo, filtrando os registros entre start e end
-                },
-            });
+		const result = await queryBuilder.getRawMany();
 
-        if (!entities || entities.length === 0) {
-            throw new NotFoundException('No charts found');
-        }
+		if (!result.length) {
+			throw new NotFoundException('Nenhum chart encontrado');
+		}
 
-        return this.toStackedData(entities);
-    }
+		return result.map(item => ({
+			period: item.period,
+			entry: [item.label, item.value],
+		}));
+	}
+
+	async findPercentageByDates(
+		analysis: string,
+		startDate: string,
+		endDate: string,
+		country?: string,
+		state?: string,
+		city?: string,
+		source?: string,
+		periodType?: string,
+	): Promise<IStackedData[]> {
+		this.logger.log(`Calculating percentages for analysis: ${analysis}, period: ${startDate} to ${endDate}`);
+
+		// Converte as strings de datas para objetos Date
+		const start = new Date(startDate);
+		const end = new Date(endDate);
+
+		// Realiza o processamento dos dados baseado nas datas e no período fornecido
+		// Exemplo simplificado de uma consulta de percentuais baseada em datas
+
+		// Você pode construir a lógica para calcular os percentuais anuais, bianuais, etc.
+		// com base nas datas convertidas e ajustar a lógica do repositório abaixo.
+
+		const entities = await this.dataSourceService
+			.getDataSource()
+			.getRepository(ChartEntity)
+			.find({
+				where: {
+					analysis,
+					country,
+					state,
+					city,
+					source,
+					// Aqui você aplicaria as datas conforme a lógica que deseja para o cálculo de percentuais
+					// Por exemplo, filtrando os registros entre start e end
+				},
+			});
+
+		if (!entities || entities.length === 0) {
+			throw new NotFoundException('No charts found');
+		}
+
+		return this.toStackedData(entities);
+	}
 
 }
