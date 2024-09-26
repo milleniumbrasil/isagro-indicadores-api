@@ -1,5 +1,5 @@
 
-import { Controller, Get, NotFoundException, Query, BadRequestException } from '@nestjs/common';
+import { Controller, Get, Query, BadRequestException } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiQuery } from '@nestjs/swagger';
 import { ChartService } from './chart.service';
 import { IStackedData } from './IStackedData';
