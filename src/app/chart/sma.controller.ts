@@ -13,7 +13,7 @@ export class SMAController {
 	@ApiOperation({
 		summary: `Média móvel simples para um período anual`,
 		description: `
-		Calcula a Média Móvel Simples (SMA) com base em intervalos bienais, suavizando flutuações e identificando tendências ao longo do tempo.
+		Calcula a Média Móvel Simples (SMA) com base em intervalos anuais, suavizando flutuações e identificando tendências ao longo do tempo.
 
 		A Média Móvel Simples (SMA) é uma técnica estatística utilizada para suavizar flutuações em uma série temporal. Ela calcula a média dos dados de um conjunto fixo de períodos consecutivos, proporcionando uma visão clara das tendências ao longo do tempo. Neste caso, o cálculo considera intervalos de análise, como bienal, trienal, quadrenal ou quinquenal, para oferecer uma perspectiva precisa da evolução dos dados ao longo desses períodos.
 		`

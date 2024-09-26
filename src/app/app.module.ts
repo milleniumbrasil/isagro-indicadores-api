@@ -4,7 +4,6 @@ import { join } from "path";
 import { Module } from "@nestjs/common";
 import { ConfigModule } from "@nestjs/config";
 import { ServeStaticModule } from "@nestjs/serve-static";
-import { HealthModule } from "./health/health.module";
 
 @Module({
   imports: [
@@ -15,7 +14,6 @@ import { HealthModule } from "./health/health.module";
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, "..", "..", "public"),
     }),
-    HealthModule,
     ChartModule
   ],
 })
