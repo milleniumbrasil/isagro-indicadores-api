@@ -379,52 +379,7 @@ export class ChartService {
 
         this.logger.log(`Finding quintennial percnetage stacked charts for analysis=${analysis}, label=${label}, startDate=${startDate}, endDate=${endDate}, country=${country}, state=${state}, city=${city}, source=${source}`);
 
-        const queryRunner = this.dataSourceService.getDataSource().createQueryRunner();
-		const whereClause = this.getWhereClause(analysis, label, startDate, endDate, country, state, city, source);
-
-        const query = `
-					SELECT
-						Report.start_period_group,
-						Report.end_period_group,
-						Report.total_value,
-						Report.total_count,
-						ROUND((Report.total_value / NULLIF(TotalSum.total_value_all_periods, 0)) * 100, 2) AS percentual_total
-					FROM (
-						SELECT
-							FLOOR(EXTRACT(YEAR FROM tb_chart.period) / 5) * 5 AS start_period_group,
-							(FLOOR(EXTRACT(YEAR FROM tb_chart.period) / 5) * 5) + 4 AS end_period_group,
-							SUM(tb_chart.value) AS total_value,
-							COUNT(tb_chart.value) AS total_count
-						FROM
-							tb_chart
-            			${whereClause}
-						GROUP BY
-							FLOOR(EXTRACT(YEAR FROM tb_chart.period) / 5)
-					) AS Report
-					CROSS JOIN (
-						SELECT
-							SUM(CAST(tb_chart.value AS DECIMAL)) AS total_value_all_periods
-						FROM
-							tb_chart
-            			${whereClause}
-					) AS TotalSum
-					ORDER BY
-						Report.start_period_group ASC;
-        `;
-
-        const result = await queryRunner.query(query);
-        await queryRunner.release();
-
-        if (!result || result.length === 0) {
-            throw new NotFoundException('Nenhum dado encontrado para o período especificado');
-        }
-
-        const stackedData = result.map((item: any) => ({
-            period: `${item.start_period_group}-${item.end_period_group}`,
-            entry: [analysis, item.percentual_total],
-        }));
-
-		return stackedData;
+		return this.findPercentage(analysis, 5, label, startDate, endDate, country, state, city, source);
     }
 
     async findPercentage(
