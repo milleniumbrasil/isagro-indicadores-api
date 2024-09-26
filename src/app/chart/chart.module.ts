@@ -2,8 +2,9 @@ import { Module } from "@nestjs/common";
 import { HttpModule } from "@nestjs/axios";
 import { ChartService } from "./chart.service";
 import { EnvironmentModule } from "../config/environment.module";
-import { ChartController } from "./chart.controller";
 import { MenuController } from "./menu.controller";
+import { SumController } from "./sum.controller";
+import { PercentageController } from "./percentage.controller";
 
 @Module({
   imports: [
@@ -12,6 +13,6 @@ import { MenuController } from "./menu.controller";
   ],
   providers: [ChartService], // Registra-os como um provedores para ser utilizado por este módulo
   exports: [ChartService], // Exporta o ChartService para que possa ser injetado em outros módulos
-  controllers: [ChartController, MenuController], // Registra os controladores para serem utilizados por este módulo
+  controllers: [SumController, PercentageController, MenuController], // Registra os controladores para serem utilizados por este módulo
 })
 export class ChartModule {}
