@@ -16,6 +16,10 @@ export class ChartService {
 			entry: [item.label, item.value]
 		}));
 	}
+	
+	public getAvailableAnalyses(): string[] {
+		return ['erosão', 'GEE', 'NH3', 'NPK', 'orgânicas', 'pesticidas', 'poluição'];
+	}
 
 	public getErosoesValidLabels(): string[] {
 		return ['pastagem', 'cultura'];

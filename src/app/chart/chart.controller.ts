@@ -11,6 +11,16 @@ export class ChartController {
 	constructor(private readonly chartService: ChartService) { }
 
 	@ApiOperation({
+		summary: 'Retorna os tipos de análises disponíveis',
+		description: 'Este endpoint retorna uma lista de tipos de análises disponíveis.',
+	})
+	@ApiResponse({ status: 200, description: 'Lista de análises disponíveis', type: [String] })
+	@Get('/available-analyses')
+	async getAvailableAnalyses(): Promise<string[]> {
+		return this.chartService.getAvailableAnalyses();
+	}
+	
+	@ApiOperation({
 		summary: 'Retorna rótulos válidos para uma análise específica',
 		description: 'Esse endpoint retorna os rótulos válidos com base no tipo de análise passada como parâmetro.',
 	})
@@ -34,7 +44,6 @@ export class ChartController {
 		}
 		return labels;
 	}
-
 
 	@ApiOperation({
 		summary: 'Busca Charts pelo analysis e intervalo de datas.',
