@@ -5,7 +5,6 @@ import { SwaggerModule, DocumentBuilder } from "@nestjs/swagger";
 import { AppModule } from "./app.module";
 import { DataSourceService } from "./config/datasource.service";
 import { EnvironmentService } from "./config/environment.service";
-import { HealthService } from "./health/health.service";
 import { AppReadinessService } from "./config/app.readiness.service";
 
 async function bootstrap() {
@@ -42,16 +41,6 @@ async function bootstrap() {
     .catch((error: any) => console.log(error));
 
   if (!isProd) {
-    const sessionHealthCheck = app
-      .get(HealthService)
-      .verifyEndpointSessionHealthCheck()
-      .catch((error: any) => console.log(error));
-
-    if (sessionHealthCheck) {
-      console.log("Session Token JWT microservice is UP!");
-    } else {
-      throw Error("Session Token JWT microservice is DOWN!");
-    }
 
     const config = new DocumentBuilder()
       .setTitle(microserviceName)
