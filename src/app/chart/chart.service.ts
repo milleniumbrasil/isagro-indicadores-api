@@ -379,29 +379,25 @@ export class ChartService {
         source?: string,
     ): Promise<IStackedData[]> {
         this.logger.log(`Finding annual stacked charts for analysis: ${analysis}, from ${startDate} to ${endDate}`);
-        const queryRunner = this.dataSourceService.getDataSource().createQueryRunner();
-        const parameters: any[] = [analysis, startDate, endDate];
 
-        let whereClause = `WHERE analysis = ? AND period BETWEEN ? AND ?`;
+        const queryRunner = this.dataSourceService.getDataSource().createQueryRunner();
+
+        let whereClause = `WHERE tb_chart.analysis = '${analysis}' AND tb_chart.period BETWEEN '${startDate}' AND '${endDate}'`;
 
         if (country) {
-            whereClause += ` AND country = ?`;
-            parameters.push(country);
+            whereClause += ` AND tb_chart.country = '${country}'`;
         }
 
         if (state) {
-            whereClause += ` AND state = ?`;
-            parameters.push(state);
+            whereClause += ` AND tb_chart.state = '${state}'`;
         }
 
         if (city) {
-            whereClause += ` AND city = ?`;
-            parameters.push(city);
+            whereClause += ` AND tb_chart.city = '${city}'`;
         }
 
         if (source) {
-            whereClause += ` AND source = ?`;
-            parameters.push(source);
+            whereClause += ` AND tb_chart.source = '${source}'`;
         }
 
         const query = `
@@ -418,7 +414,7 @@ export class ChartService {
                 period_group ASC, label ASC;
         `;
 
-        const result = await queryRunner.query(query, parameters);
+        const result = await queryRunner.query(query);
         await queryRunner.release();
 
         if (!result || result.length === 0) {
@@ -441,29 +437,25 @@ export class ChartService {
         source?: string,
     ): Promise<IStackedData[]> {
         this.logger.log(`Finding biennial stacked charts for analysis: ${analysis}, from ${startDate} to ${endDate}`);
-        const queryRunner = this.dataSourceService.getDataSource().createQueryRunner();
-        const parameters: any[] = [analysis, startDate, endDate];
 
-        let whereClause = `WHERE analysis = ? AND period BETWEEN ? AND ?`;
+        const queryRunner = this.dataSourceService.getDataSource().createQueryRunner();
+
+        let whereClause = `WHERE tb_chart.analysis = '${analysis}' AND tb_chart.period BETWEEN '${startDate}' AND '${endDate}'`;
 
         if (country) {
-            whereClause += ` AND country = ?`;
-            parameters.push(country);
+            whereClause += ` AND tb_chart.country = '${country}'`;
         }
 
         if (state) {
-            whereClause += ` AND state = ?`;
-            parameters.push(state);
+            whereClause += ` AND tb_chart.state = '${state}'`;
         }
 
         if (city) {
-            whereClause += ` AND city = ?`;
-            parameters.push(city);
+            whereClause += ` AND tb_chart.city = '${city}'`;
         }
 
         if (source) {
-            whereClause += ` AND source = ?`;
-            parameters.push(source);
+            whereClause += ` AND tb_chart.source = '${source}'`;
         }
 
         const query = `
@@ -480,7 +472,7 @@ export class ChartService {
                 period_group ASC, label ASC;
         `;
 
-        const result = await queryRunner.query(query, parameters);
+        const result = await queryRunner.query(query);
         await queryRunner.release();
 
         if (!result || result.length === 0) {
@@ -503,29 +495,25 @@ export class ChartService {
         source?: string,
     ): Promise<IStackedData[]> {
         this.logger.log(`Finding triennial stacked charts for analysis: ${analysis}, from ${startDate} to ${endDate}`);
-        const queryRunner = this.dataSourceService.getDataSource().createQueryRunner();
-        const parameters: any[] = [analysis, startDate, endDate];
 
-        let whereClause = `WHERE analysis = ? AND period BETWEEN ? AND ?`;
+        const queryRunner = this.dataSourceService.getDataSource().createQueryRunner();
+
+        let whereClause = `WHERE tb_chart.analysis = '${analysis}' AND tb_chart.period BETWEEN '${startDate}' AND '${endDate}'`;
 
         if (country) {
-            whereClause += ` AND country = ?`;
-            parameters.push(country);
+            whereClause += ` AND tb_chart.country = '${country}'`;
         }
 
         if (state) {
-            whereClause += ` AND state = ?`;
-            parameters.push(state);
+            whereClause += ` AND tb_chart.state = '${state}'`;
         }
 
         if (city) {
-            whereClause += ` AND city = ?`;
-            parameters.push(city);
+            whereClause += ` AND tb_chart.city = '${city}'`;
         }
 
         if (source) {
-            whereClause += ` AND source = ?`;
-            parameters.push(source);
+            whereClause += ` AND tb_chart.source = '${source}'`;
         }
 
         const query = `
@@ -542,7 +530,7 @@ export class ChartService {
                 period_group ASC, label ASC;
         `;
 
-        const result = await queryRunner.query(query, parameters);
+        const result = await queryRunner.query(query);
         await queryRunner.release();
 
         if (!result || result.length === 0) {
@@ -565,29 +553,25 @@ export class ChartService {
         source?: string,
     ): Promise<IStackedData[]> {
         this.logger.log(`Finding quadrennial stacked charts for analysis: ${analysis}, from ${startDate} to ${endDate}`);
-        const queryRunner = this.dataSourceService.getDataSource().createQueryRunner();
-        const parameters: any[] = [analysis, startDate, endDate];
 
-        let whereClause = `WHERE analysis = ? AND period BETWEEN ? AND ?`;
+        const queryRunner = this.dataSourceService.getDataSource().createQueryRunner();
+
+        let whereClause = `WHERE tb_chart.analysis = '${analysis}' AND tb_chart.period BETWEEN '${startDate}' AND '${endDate}'`;
 
         if (country) {
-            whereClause += ` AND country = ?`;
-            parameters.push(country);
+            whereClause += ` AND tb_chart.country = '${country}'`;
         }
 
         if (state) {
-            whereClause += ` AND state = ?`;
-            parameters.push(state);
+            whereClause += ` AND tb_chart.state = '${state}'`;
         }
 
         if (city) {
-            whereClause += ` AND city = ?`;
-            parameters.push(city);
+            whereClause += ` AND tb_chart.city = '${city}'`;
         }
 
         if (source) {
-            whereClause += ` AND source = ?`;
-            parameters.push(source);
+            whereClause += ` AND tb_chart.source = '${source}'`;
         }
 
         const query = `
@@ -604,7 +588,7 @@ export class ChartService {
                 period_group ASC, label ASC;
         `;
 
-        const result = await queryRunner.query(query, parameters);
+        const result = await queryRunner.query(query);
         await queryRunner.release();
 
         if (!result || result.length === 0) {
@@ -627,29 +611,25 @@ export class ChartService {
         source?: string,
     ): Promise<IStackedData[]> {
         this.logger.log(`Finding quintennial stacked charts for analysis: ${analysis}, from ${startDate} to ${endDate}`);
-        const queryRunner = this.dataSourceService.getDataSource().createQueryRunner();
-        const parameters: any[] = [analysis, startDate, endDate];
 
-        let whereClause = `WHERE analysis = ? AND period BETWEEN ? AND ?`;
+        const queryRunner = this.dataSourceService.getDataSource().createQueryRunner();
+
+        let whereClause = `WHERE tb_chart.analysis = '${analysis}' AND tb_chart.period BETWEEN '${startDate}' AND '${endDate}'`;
 
         if (country) {
-            whereClause += ` AND country = ?`;
-            parameters.push(country);
+            whereClause += ` AND tb_chart.country = '${country}'`;
         }
 
         if (state) {
-            whereClause += ` AND state = ?`;
-            parameters.push(state);
+            whereClause += ` AND tb_chart.state = '${state}'`;
         }
 
         if (city) {
-            whereClause += ` AND city = ?`;
-            parameters.push(city);
+            whereClause += ` AND tb_chart.city = '${city}'`;
         }
 
         if (source) {
-            whereClause += ` AND source = ?`;
-            parameters.push(source);
+            whereClause += ` AND tb_chart.source = '${source}'`;
         }
 
         const query = `
@@ -666,7 +646,7 @@ export class ChartService {
                 period_group ASC, label ASC;
         `;
 
-        const result = await queryRunner.query(query, parameters);
+        const result = await queryRunner.query(query);
         await queryRunner.release();
 
         if (!result || result.length === 0) {
