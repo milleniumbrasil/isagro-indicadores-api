@@ -248,7 +248,7 @@ export class ChartController {
 		@Query('city') city?: string,
 		@Query('source') source?: string,
 	): Promise<IStackedData[]> {
-		if (!analysis || !startDate || !endDate) throw new BadRequestException('Parâmetros obrigatórios: analysis, startDate e endDate');
+		if (!analysis) throw new BadRequestException('Parâmetros obrigatórios: analysis!');
 		return await this.chartService.findPercentageQuadrennial(analysis, label, startDate, endDate, country, state, city, source);
 	}
 
@@ -276,7 +276,7 @@ export class ChartController {
 		@Query('city') city?: string,
 		@Query('source') source?: string,
 	): Promise<IStackedData[]> {
-		if (!analysis || !startDate || !endDate) throw new BadRequestException('Parâmetros obrigatórios: analysis, startDate e endDate');
+		if (!analysis) throw new BadRequestException('Parâmetros obrigatórios: analysis!');
 		return await this.chartService.findPercentageQuintennial(analysis, label, startDate, endDate, country, state, city, source);
 	}
 }
