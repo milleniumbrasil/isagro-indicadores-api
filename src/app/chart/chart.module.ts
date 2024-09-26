@@ -5,6 +5,7 @@ import { EnvironmentModule } from "../config/environment.module";
 import { MenuController } from "./menu.controller";
 import { SumController } from "./sum.controller";
 import { PercentageController } from "./percentage.controller";
+import { MobileAverageController } from "./mobile-average.controller";
 
 @Module({
   imports: [
@@ -13,6 +14,6 @@ import { PercentageController } from "./percentage.controller";
   ],
   providers: [ChartService], // Registra-os como um provedores para ser utilizado por este módulo
   exports: [ChartService], // Exporta o ChartService para que possa ser injetado em outros módulos
-  controllers: [SumController, PercentageController, MenuController], // Registra os controladores para serem utilizados por este módulo
+  controllers: [SumController, PercentageController, MenuController, MobileAverageController], // Registra os controladores para serem utilizados por este módulo
 })
 export class ChartModule {}
