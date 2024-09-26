@@ -298,6 +298,195 @@ export class ChartService {
 		return stackedData;
     }
 
+    async findMobileAverageAnnual(
+        analysis: string,
+        label?: string,
+        startDate?: string,
+        endDate?: string,
+        country?: string,
+        state?: string,
+        city?: string,
+        source?: string,
+    ): Promise<IStackedData[]> {
+        this.logger.log(`Finding annual mobile average percnetage stacked charts for analysis=${analysis}, label=${label}, startDate=${startDate}, endDate=${endDate}, country=${country}, state=${state}, city=${city}, source=${source}`);
+
+        const queryRunner = this.dataSourceService.getDataSource().createQueryRunner();
+		const whereClause = this.getWhereClause(analysis, label, startDate, endDate, country, state, city, source);
+
+        const query = `
+						SELECT
+							Report.start_period_group,
+							Report.end_period_group,
+							Report.total_value,
+							Report.total_count,
+							ROUND((Report.total_value / NULLIF(PeriodTotals.total_value_period, 0)) * 100, 2) AS percentual_total
+						FROM (
+							SELECT
+								EXTRACT(YEAR FROM tb_chart.period) AS start_period_group,
+								EXTRACT(YEAR FROM tb_chart.period) AS end_period_group,
+								SUM(tb_chart.value) AS total_value,
+								COUNT(tb_chart.value) AS total_count
+							FROM
+								tb_chart
+									${whereClause}
+							GROUP BY
+								EXTRACT(YEAR FROM tb_chart.period)
+							ORDER BY start_period_group ASC
+						) AS Report
+						JOIN (
+							SELECT
+								EXTRACT(YEAR FROM tb_chart.period) AS start_period_group,
+								SUM(tb_chart.value) AS total_value_period
+							FROM
+								tb_chart
+									${whereClause}
+							GROUP BY
+								EXTRACT(YEAR FROM tb_chart.period)
+						) AS PeriodTotals
+						ON Report.start_period_group = PeriodTotals.start_period_group
+						ORDER BY
+							Report.start_period_group ASC;
+
+        `;
+
+        const result = await queryRunner.query(query);
+        await queryRunner.release();
+
+        if (!result || result.length === 0) {
+            throw new NotFoundException('Nenhum dado encontrado para o período especificado');
+        }
+
+        const stackedData = result.map((item: any) => ({
+            period: item.start_period_group,
+            entry: [analysis, item.percentual_total],
+        }));
+
+		return stackedData;
+    }
+
+    async findMobileAverageBiennial(
+        analysis: string,
+        label?: string,
+        startDate?: string,
+        endDate?: string,
+        country?: string,
+        state?: string,
+        city?: string,
+        source?: string,
+    ): Promise<IStackedData[]> {
+        this.logger.log(`Finding biennial mobile average percnetage stacked charts for analysis=${analysis}, label=${label}, startDate=${startDate}, endDate=${endDate}, country=${country}, state=${state}, city=${city}, source=${source}`);
+		return this.findMobileAverage(analysis, 2, label, startDate, endDate, country, state, city, source);
+    }
+
+    async findMobileAverageTriennial(
+        analysis: string,
+        label?: string,
+        startDate?: string,
+        endDate?: string,
+        country?: string,
+        state?: string,
+        city?: string,
+        source?: string,
+    ): Promise<IStackedData[]> {
+        this.logger.log(`Finding triennial mobile average percnetage stacked charts for analysis=${analysis}, label=${label}, startDate=${startDate}, endDate=${endDate}, country=${country}, state=${state}, city=${city}, source=${source}`);
+		return this.findMobileAverage(analysis, 3, label, startDate, endDate, country, state, city, source);
+    }
+
+    async findMobileAverageQuadrennial(
+        analysis: string,
+        label?: string,
+        startDate?: string,
+        endDate?: string,
+        country?: string,
+        state?: string,
+        city?: string,
+        source?: string,
+    ): Promise<IStackedData[]> {
+        this.logger.log(`Finding quadrennial mobile average percnetage stacked charts for analysis=${analysis}, label=${label}, startDate=${startDate}, endDate=${endDate}, country=${country}, state=${state}, city=${city}, source=${source}`);
+		return this.findMobileAverage(analysis, 4, label, startDate, endDate, country, state, city, source);
+    }
+
+    async findMobileAverageQuintennial(
+        analysis: string,
+        label?: string,
+        startDate?: string,
+        endDate?: string,
+        country?: string,
+        state?: string,
+        city?: string,
+        source?: string,
+    ): Promise<IStackedData[]> {
+        this.logger.log(`Finding quintennial mobile average percnetage stacked charts for analysis=${analysis}, label=${label}, startDate=${startDate}, endDate=${endDate}, country=${country}, state=${state}, city=${city}, source=${source}`);
+		return this.findMobileAverage(analysis, 5, label, startDate, endDate, country, state, city, source);
+    }
+
+    async findMobileAverage(
+        analysis: string,
+		range: number,
+        label?: string,
+        startDate?: string,
+        endDate?: string,
+        country?: string,
+        state?: string,
+        city?: string,
+        source?: string,
+    ): Promise<IStackedData[]> {
+
+        this.logger.log(`Finding mobile-average stacked charts for analysis=${analysis}, range=${range}, label=${label}, startDate=${startDate}, endDate=${endDate}, country=${country}, state=${state}, city=${city}, source=${source}`);
+
+        const queryRunner = this.dataSourceService.getDataSource().createQueryRunner();
+		const whereClause = this.getWhereClause(analysis, label, startDate, endDate, country, state, city, source);
+
+        const query = `
+					SELECT
+						Report.start_period_group,
+						Report.end_period_group,
+						Report.total_value,
+						Report.total_count,
+						ROUND((Report.total_value / NULLIF(PeriodTotals.total_value_period, 0)) * 100, 2) AS percentual_total
+					FROM (
+						SELECT
+							FLOOR(EXTRACT(YEAR FROM tb_chart.period) / ${range}) * ${range} AS start_period_group,
+							(FLOOR(EXTRACT(YEAR FROM tb_chart.period) / ${range}) * ${range}) + ${range-1} AS end_period_group,
+							SUM(tb_chart.value) AS total_value,
+							COUNT(tb_chart.value) AS total_count
+						FROM
+							tb_chart
+            				${whereClause}
+						GROUP BY
+							FLOOR(EXTRACT(YEAR FROM tb_chart.period) / ${range})
+						ORDER BY start_period_group ASC
+					) AS Report
+					JOIN (
+						SELECT
+							FLOOR(EXTRACT(YEAR FROM tb_chart.period) / 2) * 2 AS start_period_group,
+							SUM(tb_chart.value) AS total_value_period
+						FROM
+							tb_chart
+            				${whereClause}
+						GROUP BY
+							FLOOR(EXTRACT(YEAR FROM tb_chart.period) / 2)
+					) AS PeriodTotals
+					ON Report.start_period_group = PeriodTotals.start_period_group
+					ORDER BY
+						Report.start_period_group ASC;
+        `;
+
+        const result = await queryRunner.query(query);
+        await queryRunner.release();
+
+        if (!result || result.length === 0) {
+            throw new NotFoundException('Nenhum dado encontrado para o período especificado');
+        }
+
+        const stackedData = result.map((item: any) => ({
+            period: `${item.start_period_group}-${item.end_period_group}`,
+            entry: [analysis, item.percentual_total],
+        }));
+
+		return stackedData;
+    }
+
     async findSumAnnual(
         analysis: string,
         label?: string,
