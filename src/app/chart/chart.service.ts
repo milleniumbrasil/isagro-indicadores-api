@@ -16,7 +16,7 @@ export class ChartService {
 			entry: [item.label, item.value]
 		}));
 	}
-	
+
 	public getAvailableAnalyses(): string[] {
 		return ['erosão', 'GEE', 'NH3', 'NPK', 'orgânicas', 'pesticidas', 'poluição'];
 	}
@@ -70,125 +70,624 @@ export class ChartService {
 		}
 	}
 
-	async findStackedByDates(
-		analysis: string,
-		startDate: string,
-		endDate: string,
-		country?: string,
-		state?: string,
-		city?: string,
-		source?: string,
-		period: 'annual' | 'biennial' | 'triennial' | 'quadrennial' | 'quintennial' = 'annual',
-	): Promise<IStackedData[]> {
-		this.logger.log(`Finding stacked charts for analysis: ${analysis}, period: ${period}, from ${startDate} to ${endDate}`);
+    async findPercentageAnnual(
+        analysis: string,
+        startDate: string,
+        endDate: string,
+        country?: string,
+        state?: string,
+        city?: string,
+        source?: string,
+    ): Promise<IStackedData[]> {
+        this.logger.log(`Finding annual stacked charts for analysis: ${analysis}, from ${startDate} to ${endDate}`);
+        const queryRunner = this.dataSourceService.getDataSource().createQueryRunner();
+        const parameters: any[] = [analysis, startDate, endDate];
 
-		// Montando o objeto where de forma dinâmica
-		const whereConditions: any = {
-			analysis,
-			date: Between(startDate, endDate),
-		};
+        let whereClause = `WHERE analysis = ? AND periodo BETWEEN ? AND ?`;
 
-		if (country) {
-			whereConditions.country = country;
-		}
-		if (state) {
-			whereConditions.state = state;
-		}
-		if (city) {
-			whereConditions.city = city;
-		}
-		if (source) {
-			whereConditions.source = source;
-		}
+        if (country) {
+            whereClause += ` AND country = ?`;
+            parameters.push(country);
+        }
 
-		// Calculando o agrupamento e percentuais baseado no período solicitado
-		let groupBy: string;
-		switch (period) {
-			case 'biennial':
-				groupBy = `FLOOR(EXTRACT(YEAR FROM date) / 2) * 2`; // Agrupamento bianual
-				break;
-			case 'triennial':
-				groupBy = `FLOOR(EXTRACT(YEAR FROM date) / 3) * 3`; // Agrupamento trianual
-				break;
-			case 'quadrennial':
-				groupBy = `FLOOR(EXTRACT(YEAR FROM date) / 4) * 4`; // Agrupamento quadrianuais
-				break;
-			case 'quintennial':
-				groupBy = `FLOOR(EXTRACT(YEAR FROM date) / 5) * 5`; // Agrupamento pentanuais
-				break;
-			case 'annual':
-			default:
-				groupBy = `EXTRACT(YEAR FROM date)`; // Agrupamento anual
-				break;
-		}
+        if (state) {
+            whereClause += ` AND state = ?`;
+            parameters.push(state);
+        }
 
-		const queryBuilder = this.dataSourceService
-			.getDataSource()
-			.getRepository(ChartEntity)
-			.createQueryBuilder('chart')
-			.select([
-				`ROUND(AVG(chart.value), 2) AS value`,
-				`${groupBy} AS period`,
-				'chart.label',
-			])
-			.where(whereConditions)
-			.groupBy(groupBy)
-			.addGroupBy('chart.label');
+        if (city) {
+            whereClause += ` AND city = ?`;
+            parameters.push(city);
+        }
 
-		const result = await queryBuilder.getRawMany();
+        if (source) {
+            whereClause += ` AND source = ?`;
+            parameters.push(source);
+        }
 
-		if (!result.length) {
-			throw new NotFoundException('Nenhum chart encontrado');
-		}
+        const query = `
+            SELECT
+                EXTRACT(YEAR FROM periodo) AS period_group,
+                label,
+                ROUND(AVG(value), 2) AS average_value
+            FROM
+                tb_chart
+            ${whereClause}
+            GROUP BY
+                EXTRACT(YEAR FROM periodo), label
+            ORDER BY
+                period_group ASC, label ASC;
+        `;
 
-		return result.map(item => ({
-			period: item.period,
-			entry: [item.label, item.value],
-		}));
-	}
+        const result = await queryRunner.query(query, parameters);
+        await queryRunner.release();
 
-	async findPercentageByDates(
-		analysis: string,
-		startDate: string,
-		endDate: string,
-		country?: string,
-		state?: string,
-		city?: string,
-		source?: string,
-		periodType?: string,
-	): Promise<IStackedData[]> {
-		this.logger.log(`Calculating percentages for analysis: ${analysis}, period: ${startDate} to ${endDate}`);
+        if (!result || result.length === 0) {
+            throw new NotFoundException('Nenhum dado encontrado para o período especificado');
+        }
 
-		// Converte as strings de datas para objetos Date
-		const start = new Date(startDate);
-		const end = new Date(endDate);
+        return result.map((item: any) => ({
+            period: item.period_group,
+            entry: [item.label, item.average_value],
+        }));
+    }
 
-		// Realiza o processamento dos dados baseado nas datas e no período fornecido
-		// Exemplo simplificado de uma consulta de percentuais baseada em datas
+    async findPercentageBiennial(
+        analysis: string,
+        startDate: string,
+        endDate: string,
+        country?: string,
+        state?: string,
+        city?: string,
+        source?: string,
+    ): Promise<IStackedData[]> {
+        this.logger.log(`Finding biennial stacked charts for analysis: ${analysis}, from ${startDate} to ${endDate}`);
+        const queryRunner = this.dataSourceService.getDataSource().createQueryRunner();
+        const parameters: any[] = [analysis, startDate, endDate];
 
-		// Você pode construir a lógica para calcular os percentuais anuais, bianuais, etc.
-		// com base nas datas convertidas e ajustar a lógica do repositório abaixo.
+        let whereClause = `WHERE analysis = ? AND periodo BETWEEN ? AND ?`;
 
-		const entities = await this.dataSourceService
-			.getDataSource()
-			.getRepository(ChartEntity)
-			.find({
-				where: {
-					analysis,
-					country,
-					state,
-					city,
-					source,
-					// Aqui você aplicaria as datas conforme a lógica que deseja para o cálculo de percentuais
-					// Por exemplo, filtrando os registros entre start e end
-				},
-			});
+        if (country) {
+            whereClause += ` AND country = ?`;
+            parameters.push(country);
+        }
 
-		if (!entities || entities.length === 0) {
-			throw new NotFoundException('No charts found');
-		}
+        if (state) {
+            whereClause += ` AND state = ?`;
+            parameters.push(state);
+        }
 
-		return this.toStackedData(entities);
-	}
+        if (city) {
+            whereClause += ` AND city = ?`;
+            parameters.push(city);
+        }
 
+        if (source) {
+            whereClause += ` AND source = ?`;
+            parameters.push(source);
+        }
+
+        const query = `
+            SELECT
+                FLOOR(EXTRACT(YEAR FROM periodo) / 2) * 2 AS period_group,
+                label,
+                ROUND(AVG(value), 2) AS average_value
+            FROM
+                tb_chart
+            ${whereClause}
+            GROUP BY
+                FLOOR(EXTRACT(YEAR FROM periodo) / 2) * 2, label
+            ORDER BY
+                period_group ASC, label ASC;
+        `;
+
+        const result = await queryRunner.query(query, parameters);
+        await queryRunner.release();
+
+        if (!result || result.length === 0) {
+            throw new NotFoundException('Nenhum dado encontrado para o período especificado');
+        }
+
+        return result.map((item: any) => ({
+            period: item.period_group,
+            entry: [item.label, item.average_value],
+        }));
+    }
+
+    async findPercentageTriennial(
+        analysis: string,
+        startDate: string,
+        endDate: string,
+        country?: string,
+        state?: string,
+        city?: string,
+        source?: string,
+    ): Promise<IStackedData[]> {
+        this.logger.log(`Finding triennial stacked charts for analysis: ${analysis}, from ${startDate} to ${endDate}`);
+        const queryRunner = this.dataSourceService.getDataSource().createQueryRunner();
+        const parameters: any[] = [analysis, startDate, endDate];
+
+        let whereClause = `WHERE analysis = ? AND periodo BETWEEN ? AND ?`;
+
+        if (country) {
+            whereClause += ` AND country = ?`;
+            parameters.push(country);
+        }
+
+        if (state) {
+            whereClause += ` AND state = ?`;
+            parameters.push(state);
+        }
+
+        if (city) {
+            whereClause += ` AND city = ?`;
+            parameters.push(city);
+        }
+
+        if (source) {
+            whereClause += ` AND source = ?`;
+            parameters.push(source);
+        }
+
+        const query = `
+            SELECT
+                FLOOR(EXTRACT(YEAR FROM periodo) / 3) * 3 AS period_group,
+                label,
+                ROUND(AVG(value), 2) AS average_value
+            FROM
+                tb_chart
+            ${whereClause}
+            GROUP BY
+                FLOOR(EXTRACT(YEAR FROM periodo) / 3) * 3, label
+            ORDER BY
+                period_group ASC, label ASC;
+        `;
+
+        const result = await queryRunner.query(query, parameters);
+        await queryRunner.release();
+
+        if (!result || result.length === 0) {
+            throw new NotFoundException('Nenhum dado encontrado para o período especificado');
+        }
+
+        return result.map((item: any) => ({
+            period: item.period_group,
+            entry: [item.label, item.average_value],
+        }));
+    }
+
+    async findPercentageQuadrennial(
+        analysis: string,
+        startDate: string,
+        endDate: string,
+        country?: string,
+        state?: string,
+        city?: string,
+        source?: string,
+    ): Promise<IStackedData[]> {
+        this.logger.log(`Finding quadrennial stacked charts for analysis: ${analysis}, from ${startDate} to ${endDate}`);
+        const queryRunner = this.dataSourceService.getDataSource().createQueryRunner();
+        const parameters: any[] = [analysis, startDate, endDate];
+
+        let whereClause = `WHERE analysis = ? AND periodo BETWEEN ? AND ?`;
+
+        if (country) {
+            whereClause += ` AND country = ?`;
+            parameters.push(country);
+        }
+
+        if (state) {
+            whereClause += ` AND state = ?`;
+            parameters.push(state);
+        }
+
+        if (city) {
+            whereClause += ` AND city = ?`;
+            parameters.push(city);
+        }
+
+        if (source) {
+            whereClause += ` AND source = ?`;
+            parameters.push(source);
+        }
+
+        const query = `
+            SELECT
+                FLOOR(EXTRACT(YEAR FROM periodo) / 4) * 4 AS period_group,
+                label,
+                ROUND(AVG(value), 2) AS average_value
+            FROM
+                tb_chart
+            ${whereClause}
+            GROUP BY
+                FLOOR(EXTRACT(YEAR FROM periodo) / 4) * 4, label
+            ORDER BY
+                period_group ASC, label ASC;
+        `;
+
+        const result = await queryRunner.query(query, parameters);
+        await queryRunner.release();
+
+        if (!result || result.length === 0) {
+            throw new NotFoundException('Nenhum dado encontrado para o período especificado');
+        }
+
+        return result.map((item: any) => ({
+            period: item.period_group,
+            entry: [item.label, item.average_value],
+        }));
+    }
+
+    async findPercentageQuintennial(
+        analysis: string,
+        startDate: string,
+        endDate: string,
+        country?: string,
+        state?: string,
+        city?: string,
+        source?: string,
+    ): Promise<IStackedData[]> {
+        this.logger.log(`Finding quintennial stacked charts for analysis: ${analysis}, from ${startDate} to ${endDate}`);
+        const queryRunner = this.dataSourceService.getDataSource().createQueryRunner();
+        const parameters: any[] = [analysis, startDate, endDate];
+
+        let whereClause = `WHERE analysis = ? AND periodo BETWEEN ? AND ?`;
+
+        if (country) {
+            whereClause += ` AND country = ?`;
+            parameters.push(country);
+        }
+
+        if (state) {
+            whereClause += ` AND state = ?`;
+            parameters.push(state);
+        }
+
+        if (city) {
+            whereClause += ` AND city = ?`;
+            parameters.push(city);
+        }
+
+        if (source) {
+            whereClause += ` AND source = ?`;
+            parameters.push(source);
+        }
+
+        const query = `
+            SELECT
+                FLOOR(EXTRACT(YEAR FROM periodo) / 5) * 5 AS period_group,
+                label,
+                ROUND(AVG(value), 2) AS average_value
+            FROM
+                tb_chart
+            ${whereClause}
+            GROUP BY
+                FLOOR(EXTRACT(YEAR FROM periodo) / 5) * 5, label
+            ORDER BY
+                period_group ASC, label ASC;
+        `;
+
+        const result = await queryRunner.query(query, parameters);
+        await queryRunner.release();
+
+        if (!result || result.length === 0) {
+            throw new NotFoundException('Nenhum dado encontrado para o período especificado');
+        }
+
+        return result.map((item: any) => ({
+            period: item.period_group,
+            entry: [item.label, item.average_value],
+        }));
+    }
+
+
+    async findSumAnnual(
+        analysis: string,
+        startDate: string,
+        endDate: string,
+        country?: string,
+        state?: string,
+        city?: string,
+        source?: string,
+    ): Promise<IStackedData[]> {
+        this.logger.log(`Finding annual stacked charts for analysis: ${analysis}, from ${startDate} to ${endDate}`);
+        const queryRunner = this.dataSourceService.getDataSource().createQueryRunner();
+        const parameters: any[] = [analysis, startDate, endDate];
+
+        let whereClause = `WHERE analysis = ? AND periodo BETWEEN ? AND ?`;
+
+        if (country) {
+            whereClause += ` AND country = ?`;
+            parameters.push(country);
+        }
+
+        if (state) {
+            whereClause += ` AND state = ?`;
+            parameters.push(state);
+        }
+
+        if (city) {
+            whereClause += ` AND city = ?`;
+            parameters.push(city);
+        }
+
+        if (source) {
+            whereClause += ` AND source = ?`;
+            parameters.push(source);
+        }
+
+        const query = `
+            SELECT
+                EXTRACT(YEAR FROM periodo) AS period_group,
+                label,
+                SUM(value) AS total_value
+            FROM
+                tb_chart
+            ${whereClause}
+            GROUP BY
+                EXTRACT(YEAR FROM periodo), label
+            ORDER BY
+                period_group ASC, label ASC;
+        `;
+
+        const result = await queryRunner.query(query, parameters);
+        await queryRunner.release();
+
+        if (!result || result.length === 0) {
+            throw new NotFoundException('Nenhum dado encontrado para o período especificado');
+        }
+
+        return result.map((item: any) => ({
+            period: item.period_group,
+            entry: [item.label, item.total_value],
+        }));
+    }
+
+    async findSumBiennial(
+        analysis: string,
+        startDate: string,
+        endDate: string,
+        country?: string,
+        state?: string,
+        city?: string,
+        source?: string,
+    ): Promise<IStackedData[]> {
+        this.logger.log(`Finding biennial stacked charts for analysis: ${analysis}, from ${startDate} to ${endDate}`);
+        const queryRunner = this.dataSourceService.getDataSource().createQueryRunner();
+        const parameters: any[] = [analysis, startDate, endDate];
+
+        let whereClause = `WHERE analysis = ? AND periodo BETWEEN ? AND ?`;
+
+        if (country) {
+            whereClause += ` AND country = ?`;
+            parameters.push(country);
+        }
+
+        if (state) {
+            whereClause += ` AND state = ?`;
+            parameters.push(state);
+        }
+
+        if (city) {
+            whereClause += ` AND city = ?`;
+            parameters.push(city);
+        }
+
+        if (source) {
+            whereClause += ` AND source = ?`;
+            parameters.push(source);
+        }
+
+        const query = `
+            SELECT
+                FLOOR(EXTRACT(YEAR FROM periodo) / 2) * 2 AS period_group,
+                label,
+                SUM(value) AS total_value
+            FROM
+                tb_chart
+            ${whereClause}
+            GROUP BY
+                FLOOR(EXTRACT(YEAR FROM periodo) / 2) * 2, label
+            ORDER BY
+                period_group ASC, label ASC;
+        `;
+
+        const result = await queryRunner.query(query, parameters);
+        await queryRunner.release();
+
+        if (!result || result.length === 0) {
+            throw new NotFoundException('Nenhum dado encontrado para o período especificado');
+        }
+
+        return result.map((item: any) => ({
+            period: item.period_group,
+            entry: [item.label, item.total_value],
+        }));
+    }
+
+    async findSumTriennial(
+        analysis: string,
+        startDate: string,
+        endDate: string,
+        country?: string,
+        state?: string,
+        city?: string,
+        source?: string,
+    ): Promise<IStackedData[]> {
+        this.logger.log(`Finding triennial stacked charts for analysis: ${analysis}, from ${startDate} to ${endDate}`);
+        const queryRunner = this.dataSourceService.getDataSource().createQueryRunner();
+        const parameters: any[] = [analysis, startDate, endDate];
+
+        let whereClause = `WHERE analysis = ? AND periodo BETWEEN ? AND ?`;
+
+        if (country) {
+            whereClause += ` AND country = ?`;
+            parameters.push(country);
+        }
+
+        if (state) {
+            whereClause += ` AND state = ?`;
+            parameters.push(state);
+        }
+
+        if (city) {
+            whereClause += ` AND city = ?`;
+            parameters.push(city);
+        }
+
+        if (source) {
+            whereClause += ` AND source = ?`;
+            parameters.push(source);
+        }
+
+        const query = `
+            SELECT
+                FLOOR(EXTRACT(YEAR FROM periodo) / 3) * 3 AS period_group,
+                label,
+                SUM(value) AS total_value
+            FROM
+                tb_chart
+            ${whereClause}
+            GROUP BY
+                FLOOR(EXTRACT(YEAR FROM periodo) / 3) * 3, label
+            ORDER BY
+                period_group ASC, label ASC;
+        `;
+
+        const result = await queryRunner.query(query, parameters);
+        await queryRunner.release();
+
+        if (!result || result.length === 0) {
+            throw new NotFoundException('Nenhum dado encontrado para o período especificado');
+        }
+
+        return result.map((item: any) => ({
+            period: item.period_group,
+            entry: [item.label, item.total_value],
+        }));
+    }
+
+    async findSumQuadrennial(
+        analysis: string,
+        startDate: string,
+        endDate: string,
+        country?: string,
+        state?: string,
+        city?: string,
+        source?: string,
+    ): Promise<IStackedData[]> {
+        this.logger.log(`Finding quadrennial stacked charts for analysis: ${analysis}, from ${startDate} to ${endDate}`);
+        const queryRunner = this.dataSourceService.getDataSource().createQueryRunner();
+        const parameters: any[] = [analysis, startDate, endDate];
+
+        let whereClause = `WHERE analysis = ? AND periodo BETWEEN ? AND ?`;
+
+        if (country) {
+            whereClause += ` AND country = ?`;
+            parameters.push(country);
+        }
+
+        if (state) {
+            whereClause += ` AND state = ?`;
+            parameters.push(state);
+        }
+
+        if (city) {
+            whereClause += ` AND city = ?`;
+            parameters.push(city);
+        }
+
+        if (source) {
+            whereClause += ` AND source = ?`;
+            parameters.push(source);
+        }
+
+        const query = `
+            SELECT
+                FLOOR(EXTRACT(YEAR FROM periodo) / 4) * 4 AS period_group,
+                label,
+                SUM(value) AS total_value
+            FROM
+                tb_chart
+            ${whereClause}
+            GROUP BY
+                FLOOR(EXTRACT(YEAR FROM periodo) / 4) * 4, label
+            ORDER BY
+                period_group ASC, label ASC;
+        `;
+
+        const result = await queryRunner.query(query, parameters);
+        await queryRunner.release();
+
+        if (!result || result.length === 0) {
+            throw new NotFoundException('Nenhum dado encontrado para o período especificado');
+        }
+
+        return result.map((item: any) => ({
+            period: item.period_group,
+            entry: [item.label, item.total_value],
+        }));
+    }
+
+    async findSumQuintennial(
+        analysis: string,
+        startDate: string,
+        endDate: string,
+        country?: string,
+        state?: string,
+        city?: string,
+        source?: string,
+    ): Promise<IStackedData[]> {
+        this.logger.log(`Finding quintennial stacked charts for analysis: ${analysis}, from ${startDate} to ${endDate}`);
+        const queryRunner = this.dataSourceService.getDataSource().createQueryRunner();
+        const parameters: any[] = [analysis, startDate, endDate];
+
+        let whereClause = `WHERE analysis = ? AND periodo BETWEEN ? AND ?`;
+
+        if (country) {
+            whereClause += ` AND country = ?`;
+            parameters.push(country);
+        }
+
+        if (state) {
+            whereClause += ` AND state = ?`;
+            parameters.push(state);
+        }
+
+        if (city) {
+            whereClause += ` AND city = ?`;
+            parameters.push(city);
+        }
+
+        if (source) {
+            whereClause += ` AND source = ?`;
+            parameters.push(source);
+        }
+
+        const query = `
+            SELECT
+                FLOOR(EXTRACT(YEAR FROM periodo) / 5) * 5 AS period_group,
+                label,
+                SUM(value) AS total_value
+            FROM
+                tb_chart
+            ${whereClause}
+            GROUP BY
+                FLOOR(EXTRACT(YEAR FROM periodo) / 5) * 5, label
+            ORDER BY
+                period_group ASC, label ASC;
+        `;
+
+        const result = await queryRunner.query(query, parameters);
+        await queryRunner.release();
+
+        if (!result || result.length === 0) {
+            throw new NotFoundException('Nenhum dado encontrado para o período especificado');
+        }
+
+        return result.map((item: any) => ({
+            period: item.period_group,
+            entry: [item.label, item.total_value],
+        }));
+    }
 }

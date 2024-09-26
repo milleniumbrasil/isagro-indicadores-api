@@ -19,7 +19,7 @@ export class ChartController {
 	async getAvailableAnalyses(): Promise<string[]> {
 		return this.chartService.getAvailableAnalyses();
 	}
-	
+
 	@ApiOperation({
 		summary: 'Retorna rótulos válidos para uma análise específica',
 		description: 'Esse endpoint retorna os rótulos válidos com base no tipo de análise passada como parâmetro.',
@@ -46,28 +46,6 @@ export class ChartController {
 	}
 
 	@ApiOperation({
-		summary: 'Busca Charts pelo analysis e intervalo de datas.',
-		description: 'Este endpoint busca Charts agrupados na tabela TB_Chart com base nas datas fornecidas.',
-	})
-	@ApiQuery({ name: 'analysis', required: true, description: 'Tipo de análise. Exemplo: erosão, GEE, NH3.' })
-	@ApiQuery({ name: 'startDate', required: true, description: 'Data inicial no formato YYYY-MM-DD.' })
-	@ApiQuery({ name: 'endDate', required: true, description: 'Data final no formato YYYY-MM-DD.' })
-	@ApiResponse({ status: 200, description: 'Lista de Charts encontrados.', type: [IStackedData] })
-	@Get('/stacked-charts')
-	async findStackedCharts(
-		@Query('analysis') analysis: string,
-		@Query('startDate') startDate: string,
-		@Query('endDate') endDate: string,
-		@Query('country') country?: string,
-		@Query('state') state?: string,
-		@Query('city') city?: string,
-		@Query('source') source?: string,
-	): Promise<IStackedData[]> {
-		if (!analysis || !startDate || !endDate) throw new BadRequestException('Parâmetros obrigatórios: analysis, startDate e endDate');
-		return await this.chartService.findStackedByDates(analysis, startDate, endDate, country, state, city, source);
-	}
-
-	@ApiOperation({
 		summary: "Busca percentuais anuais dos Charts pelo analysis e intervalo de datas.",
 		description: "Este endpoint busca percentuais anuais na tabela TB_Chart com base nas datas fornecidas.",
 	})
@@ -75,8 +53,8 @@ export class ChartController {
 	@ApiQuery({ name: 'startDate', required: true, description: 'Data inicial no formato YYYY-MM-DD.' })
 	@ApiQuery({ name: 'endDate', required: true, description: 'Data final no formato YYYY-MM-DD.' })
 	@ApiResponse({ status: 200, description: 'Lista de percentuais anuais.', type: [IStackedData] })
-	@Get('/stacked-annual')
-	async findAnnualStacked(
+	@Get('/sum-annual')
+	async findAnnualSum(
 		@Query('analysis') analysis: string,
 		@Query('startDate') startDate: string,
 		@Query('endDate') endDate: string,
@@ -86,7 +64,7 @@ export class ChartController {
 		@Query('source') source?: string,
 	): Promise<IStackedData[]> {
 		if (!analysis || !startDate || !endDate) throw new BadRequestException('Parâmetros obrigatórios: analysis, startDate e endDate');
-		return await this.chartService.findStackedByDates(analysis, startDate, endDate, country, state, city, source, 'annual');
+		return await this.chartService.findSumAnnual(analysis, startDate, endDate, country, state, city, source);
 	}
 
 	@ApiOperation({
@@ -97,8 +75,8 @@ export class ChartController {
 	@ApiQuery({ name: 'startDate', required: true, description: 'Data inicial no formato YYYY-MM-DD.' })
 	@ApiQuery({ name: 'endDate', required: true, description: 'Data final no formato YYYY-MM-DD.' })
 	@ApiResponse({ status: 200, description: 'Lista de percentuais bianuais.', type: [IStackedData] })
-	@Get('/stacked-biennial')
-	async findBiennialStacked(
+	@Get('/sum-biennial')
+	async findBiennialSum(
 		@Query('analysis') analysis: string,
 		@Query('startDate') startDate: string,
 		@Query('endDate') endDate: string,
@@ -108,7 +86,7 @@ export class ChartController {
 		@Query('source') source?: string,
 	): Promise<IStackedData[]> {
 		if (!analysis || !startDate || !endDate) throw new BadRequestException('Parâmetros obrigatórios: analysis, startDate e endDate');
-		return await this.chartService.findStackedByDates(analysis, startDate, endDate, country, state, city, source, 'biennial');
+		return await this.chartService.findSumBiennial(analysis, startDate, endDate, country, state, city, source);
 	}
 
 	@ApiOperation({
@@ -119,8 +97,8 @@ export class ChartController {
 	@ApiQuery({ name: 'startDate', required: true, description: 'Data inicial no formato YYYY-MM-DD.' })
 	@ApiQuery({ name: 'endDate', required: true, description: 'Data final no formato YYYY-MM-DD.' })
 	@ApiResponse({ status: 200, description: 'Lista de percentuais trianuais.', type: [IStackedData] })
-	@Get('/stacked-triennial')
-	async findTriennialStacked(
+	@Get('/sum-triennial')
+	async findTriennialSum(
 		@Query('analysis') analysis: string,
 		@Query('startDate') startDate: string,
 		@Query('endDate') endDate: string,
@@ -130,7 +108,7 @@ export class ChartController {
 		@Query('source') source?: string,
 	): Promise<IStackedData[]> {
 		if (!analysis || !startDate || !endDate) throw new BadRequestException('Parâmetros obrigatórios: analysis, startDate e endDate');
-		return await this.chartService.findStackedByDates(analysis, startDate, endDate, country, state, city, source, 'triennial');
+		return await this.chartService.findSumTriennial(analysis, startDate, endDate, country, state, city, source);
 	}
 
 	@ApiOperation({
@@ -141,8 +119,8 @@ export class ChartController {
 	@ApiQuery({ name: 'startDate', required: true, description: 'Data inicial no formato YYYY-MM-DD.' })
 	@ApiQuery({ name: 'endDate', required: true, description: 'Data final no formato YYYY-MM-DD.' })
 	@ApiResponse({ status: 200, description: 'Lista de percentuais quadrianuais.', type: [IStackedData] })
-	@Get('/stacked-quadrennial')
-	async findQuadrennialStacked(
+	@Get('/sum-quadrennial')
+	async findQuadrennialSum(
 		@Query('analysis') analysis: string,
 		@Query('startDate') startDate: string,
 		@Query('endDate') endDate: string,
@@ -152,7 +130,7 @@ export class ChartController {
 		@Query('source') source?: string,
 	): Promise<IStackedData[]> {
 		if (!analysis || !startDate || !endDate) throw new BadRequestException('Parâmetros obrigatórios: analysis, startDate e endDate');
-		return await this.chartService.findStackedByDates(analysis, startDate, endDate, country, state, city, source, 'quadrennial');
+		return await this.chartService.findSumQuadrennial(analysis, startDate, endDate, country, state, city, source);
 	}
 
 	@ApiOperation({
@@ -163,8 +141,8 @@ export class ChartController {
 	@ApiQuery({ name: 'startDate', required: true, description: 'Data inicial no formato YYYY-MM-DD.' })
 	@ApiQuery({ name: 'endDate', required: true, description: 'Data final no formato YYYY-MM-DD.' })
 	@ApiResponse({ status: 200, description: 'Lista de percentuais pentanuais.', type: [IStackedData] })
-	@Get('/stacked-quintennial')
-	async findQuintennialStacked(
+	@Get('/sum-quintennial')
+	async findQuintennialSum(
 		@Query('analysis') analysis: string,
 		@Query('startDate') startDate: string,
 		@Query('endDate') endDate: string,
@@ -174,7 +152,7 @@ export class ChartController {
 		@Query('source') source?: string,
 	): Promise<IStackedData[]> {
 		if (!analysis || !startDate || !endDate) throw new BadRequestException('Parâmetros obrigatórios: analysis, startDate e endDate');
-		return await this.chartService.findStackedByDates(analysis, startDate, endDate, country, state, city, source, 'quintennial');
+		return await this.chartService.findSumQuintennial(analysis, startDate, endDate, country, state, city, source);
 	}
 
 	@ApiOperation({
@@ -196,7 +174,7 @@ export class ChartController {
 		@Query('source') source?: string,
 	): Promise<IStackedData[]> {
 		if (!analysis || !startDate || !endDate) throw new BadRequestException('Parâmetros obrigatórios: analysis, startDate e endDate');
-		return await this.chartService.findPercentageByDates(analysis, startDate, endDate, country, state, city, source, 'annual');
+		return await this.chartService.findPercentageAnnual(analysis, startDate, endDate, country, state, city, source);
 	}
 
 	@ApiOperation({
@@ -218,7 +196,7 @@ export class ChartController {
 		@Query('source') source?: string,
 	): Promise<IStackedData[]> {
 		if (!analysis || !startDate || !endDate) throw new BadRequestException('Parâmetros obrigatórios: analysis, startDate e endDate');
-		return await this.chartService.findPercentageByDates(analysis, startDate, endDate, country, state, city, source, 'biennial');
+		return await this.chartService.findPercentageBiennial(analysis, startDate, endDate, country, state, city, source);
 	}
 
 	@ApiOperation({
@@ -240,7 +218,7 @@ export class ChartController {
 		@Query('source') source?: string,
 	): Promise<IStackedData[]> {
 		if (!analysis || !startDate || !endDate) throw new BadRequestException('Parâmetros obrigatórios: analysis, startDate e endDate');
-		return await this.chartService.findPercentageByDates(analysis, startDate, endDate, country, state, city, source, 'triennial');
+		return await this.chartService.findPercentageTriennial(analysis, startDate, endDate, country, state, city, source);
 	}
 
 	@ApiOperation({
@@ -262,7 +240,7 @@ export class ChartController {
 		@Query('source') source?: string,
 	): Promise<IStackedData[]> {
 		if (!analysis || !startDate || !endDate) throw new BadRequestException('Parâmetros obrigatórios: analysis, startDate e endDate');
-		return await this.chartService.findPercentageByDates(analysis, startDate, endDate, country, state, city, source, 'quadrennial');
+		return await this.chartService.findPercentageQuadrennial(analysis, startDate, endDate, country, state, city, source);
 	}
 
 	@ApiOperation({
@@ -284,6 +262,6 @@ export class ChartController {
 		@Query('source') source?: string,
 	): Promise<IStackedData[]> {
 		if (!analysis || !startDate || !endDate) throw new BadRequestException('Parâmetros obrigatórios: analysis, startDate e endDate');
-		return await this.chartService.findPercentageByDates(analysis, startDate, endDate, country, state, city, source, 'quintennial');
+		return await this.chartService.findPercentageQuintennial(analysis, startDate, endDate, country, state, city, source);
 	}
 }
