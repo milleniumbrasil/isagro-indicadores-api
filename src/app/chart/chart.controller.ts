@@ -49,9 +49,13 @@ export class ChartController {
 		summary: "Busca percentuais anuais dos Charts pelo analysis e intervalo de datas.",
 		description: "Este endpoint busca percentuais anuais na tabela TB_Chart com base nas datas fornecidas.",
 	})
-	@ApiQuery({ name: 'analysis', required: true, description: 'Tipo de análise. Exemplo: erosão, GEE, NH3.' })
-	@ApiQuery({ name: 'startDate', required: true, description: 'Data inicial no formato YYYY-MM-DD.' })
-	@ApiQuery({ name: 'endDate', required: true, description: 'Data final no formato YYYY-MM-DD.' })
+	@ApiQuery({ name: 'analysis', required: true, description: 'Tipo de análise. Exemplo: erosão, GEE, NH3.', example: 'orgânicas', enum: ['erosão', 'GEE', 'NH3', 'NPK', 'orgânicas', 'pesticidas', 'poluição'] })
+	@ApiQuery({ name: 'startDate', required: true, description: 'Data inicial no formato YYYY-MM-DD.', example: '1990-01-01' })
+	@ApiQuery({ name: 'endDate', required: true, description: 'Data final no formato YYYY-MM-DD.', example: '1995-12-31' })
+	@ApiQuery({ name: 'country', required: false, description: 'O país para o qual os dados devem ser retornados. Opções: BR, US, FR, etc.', example: 'BR', enum: ['BR', 'US', 'FR'] })
+	@ApiQuery({ name: 'state', required: false, description: 'O estado para o qual os dados devem ser retornados. Opções: SP, RJ, MG, etc.', example: 'SP', enum: [ 'AC', 'MS', 'RS', 'CE', 'RO', 'SC', 'SE', 'AP', 'PB', 'AL', 'PE', 'PR', 'RJ', 'MT', 'DF', 'AM', 'BA', 'SP', 'ES', 'PI', 'PA', 'RR', 'MA', 'TO', 'GO', 'RN', 'MG' ],})
+	@ApiQuery({ name: 'city', required: false, description: 'O label para o qual os dados devem ser retornados. Opções: São Paulo, Maceió, Manaus, etc.', example: 'São Paulo', enum: [	"Angra dos Reis", "Anápolis", "Aracaju", "Arapiraca", "Belo Horizonte", "Belém", "Blumenau", "Boa Vista", "Brasília", "Campina Grande", "Campinas", "Campo Grande", "Caruaru", "Caxias do Sul", "Contagem", "Cuiabá", "Curitiba", "Dourados", "Feira de Santana", "Florianópolis", "Fortaleza", "Goiânia", "Ilhéus", "Imperatriz", "Joinville", "João Pessoa", "Juazeiro do Norte", "Juiz de Fora", "Londrina", "Macapá", "Maceió", "Manaus", "Marabá", "Maringá", "Mossoró", "Natal", "Niterói", "Olinda", "Palmas", "Parintins", "Parnaíba", "Pelotas", "Porto Alegre", "Porto Velho", "Recife", "Rio Branco", "Rio de Janeiro", "Rondonópolis", "Salvador", "Santarém", "Santos", "Sobral", "São Luís", "São Paulo", "Teresina", "Uberlândia", "Vila Velha", "Vitória" ], })
+	@ApiQuery({ name: 'source', required: false, description: 'Instituições, organizações ou fontes de pesquisa para o qual os dados devem ser retornados. Opções: OCDE (Organização para a Cooperação e Desenvolvimento Econômico), IAC (Instituto Agronômico de Campinas), UNB (Universidade de Brasília), etc.', example: 'IAC', enum: ['OCDE', 'IAC', 'UNB'],})
 	@ApiResponse({ status: 200, description: 'Lista de percentuais anuais.', type: [IStackedData] })
 	@Get('/sum-annual')
 	async findAnnualSum(
@@ -71,9 +75,13 @@ export class ChartController {
 		summary: 'Busca percentuais bianuais dos Charts pelo analysis e intervalo de datas.',
 		description: 'Este endpoint busca percentuais bianuais na tabela TB_Chart com base nas datas fornecidas.',
 	})
-	@ApiQuery({ name: 'analysis', required: true, description: 'Tipo de análise. Exemplo: erosão, GEE, NH3.' })
-	@ApiQuery({ name: 'startDate', required: true, description: 'Data inicial no formato YYYY-MM-DD.' })
-	@ApiQuery({ name: 'endDate', required: true, description: 'Data final no formato YYYY-MM-DD.' })
+	@ApiQuery({ name: 'analysis', required: true, description: 'Tipo de análise. Exemplo: erosão, GEE, NH3.', example: 'orgânicas', enum: ['erosão', 'GEE', 'NH3', 'NPK', 'orgânicas', 'pesticidas', 'poluição'] })
+	@ApiQuery({ name: 'startDate', required: true, description: 'Data inicial no formato YYYY-MM-DD.', example: '1990-01-01' })
+	@ApiQuery({ name: 'endDate', required: true, description: 'Data final no formato YYYY-MM-DD.', example: '1995-12-31' })
+	@ApiQuery({ name: 'country', required: false, description: 'O país para o qual os dados devem ser retornados. Opções: BR, US, FR, etc.', example: 'BR', enum: ['BR', 'US', 'FR'] })
+	@ApiQuery({ name: 'state', required: false, description: 'O estado para o qual os dados devem ser retornados. Opções: SP, RJ, MG, etc.', example: 'SP', enum: [ 'AC', 'MS', 'RS', 'CE', 'RO', 'SC', 'SE', 'AP', 'PB', 'AL', 'PE', 'PR', 'RJ', 'MT', 'DF', 'AM', 'BA', 'SP', 'ES', 'PI', 'PA', 'RR', 'MA', 'TO', 'GO', 'RN', 'MG' ],})
+	@ApiQuery({ name: 'city', required: false, description: 'O label para o qual os dados devem ser retornados. Opções: São Paulo, Maceió, Manaus, etc.', example: 'São Paulo', enum: [	"Angra dos Reis", "Anápolis", "Aracaju", "Arapiraca", "Belo Horizonte", "Belém", "Blumenau", "Boa Vista", "Brasília", "Campina Grande", "Campinas", "Campo Grande", "Caruaru", "Caxias do Sul", "Contagem", "Cuiabá", "Curitiba", "Dourados", "Feira de Santana", "Florianópolis", "Fortaleza", "Goiânia", "Ilhéus", "Imperatriz", "Joinville", "João Pessoa", "Juazeiro do Norte", "Juiz de Fora", "Londrina", "Macapá", "Maceió", "Manaus", "Marabá", "Maringá", "Mossoró", "Natal", "Niterói", "Olinda", "Palmas", "Parintins", "Parnaíba", "Pelotas", "Porto Alegre", "Porto Velho", "Recife", "Rio Branco", "Rio de Janeiro", "Rondonópolis", "Salvador", "Santarém", "Santos", "Sobral", "São Luís", "São Paulo", "Teresina", "Uberlândia", "Vila Velha", "Vitória" ], })
+	@ApiQuery({ name: 'source', required: false, description: 'Instituições, organizações ou fontes de pesquisa para o qual os dados devem ser retornados. Opções: OCDE (Organização para a Cooperação e Desenvolvimento Econômico), IAC (Instituto Agronômico de Campinas), UNB (Universidade de Brasília), etc.', example: 'IAC', enum: ['OCDE', 'IAC', 'UNB'],})
 	@ApiResponse({ status: 200, description: 'Lista de percentuais bianuais.', type: [IStackedData] })
 	@Get('/sum-biennial')
 	async findBiennialSum(
@@ -93,9 +101,13 @@ export class ChartController {
 		summary: 'Busca percentuais trianuais dos Charts pelo analysis e intervalo de datas.',
 		description: 'Este endpoint busca percentuais trianuais na tabela TB_Chart com base nas datas fornecidas.',
 	})
-	@ApiQuery({ name: 'analysis', required: true, description: 'Tipo de análise. Exemplo: erosão, GEE, NH3.' })
-	@ApiQuery({ name: 'startDate', required: true, description: 'Data inicial no formato YYYY-MM-DD.' })
-	@ApiQuery({ name: 'endDate', required: true, description: 'Data final no formato YYYY-MM-DD.' })
+	@ApiQuery({ name: 'analysis', required: true, description: 'Tipo de análise. Exemplo: erosão, GEE, NH3.', example: 'orgânicas', enum: ['erosão', 'GEE', 'NH3', 'NPK', 'orgânicas', 'pesticidas', 'poluição'] })
+	@ApiQuery({ name: 'startDate', required: true, description: 'Data inicial no formato YYYY-MM-DD.', example: '1990-01-01' })
+	@ApiQuery({ name: 'endDate', required: true, description: 'Data final no formato YYYY-MM-DD.', example: '1995-12-31' })
+	@ApiQuery({ name: 'country', required: false, description: 'O país para o qual os dados devem ser retornados. Opções: BR, US, FR, etc.', example: 'BR', enum: ['BR', 'US', 'FR'] })
+	@ApiQuery({ name: 'state', required: false, description: 'O estado para o qual os dados devem ser retornados. Opções: SP, RJ, MG, etc.', example: 'SP', enum: [ 'AC', 'MS', 'RS', 'CE', 'RO', 'SC', 'SE', 'AP', 'PB', 'AL', 'PE', 'PR', 'RJ', 'MT', 'DF', 'AM', 'BA', 'SP', 'ES', 'PI', 'PA', 'RR', 'MA', 'TO', 'GO', 'RN', 'MG' ],})
+	@ApiQuery({ name: 'city', required: false, description: 'O label para o qual os dados devem ser retornados. Opções: São Paulo, Maceió, Manaus, etc.', example: 'São Paulo', enum: [	"Angra dos Reis", "Anápolis", "Aracaju", "Arapiraca", "Belo Horizonte", "Belém", "Blumenau", "Boa Vista", "Brasília", "Campina Grande", "Campinas", "Campo Grande", "Caruaru", "Caxias do Sul", "Contagem", "Cuiabá", "Curitiba", "Dourados", "Feira de Santana", "Florianópolis", "Fortaleza", "Goiânia", "Ilhéus", "Imperatriz", "Joinville", "João Pessoa", "Juazeiro do Norte", "Juiz de Fora", "Londrina", "Macapá", "Maceió", "Manaus", "Marabá", "Maringá", "Mossoró", "Natal", "Niterói", "Olinda", "Palmas", "Parintins", "Parnaíba", "Pelotas", "Porto Alegre", "Porto Velho", "Recife", "Rio Branco", "Rio de Janeiro", "Rondonópolis", "Salvador", "Santarém", "Santos", "Sobral", "São Luís", "São Paulo", "Teresina", "Uberlândia", "Vila Velha", "Vitória" ], })
+	@ApiQuery({ name: 'source', required: false, description: 'Instituições, organizações ou fontes de pesquisa para o qual os dados devem ser retornados. Opções: OCDE (Organização para a Cooperação e Desenvolvimento Econômico), IAC (Instituto Agronômico de Campinas), UNB (Universidade de Brasília), etc.', example: 'IAC', enum: ['OCDE', 'IAC', 'UNB'],})
 	@ApiResponse({ status: 200, description: 'Lista de percentuais trianuais.', type: [IStackedData] })
 	@Get('/sum-triennial')
 	async findTriennialSum(
@@ -115,9 +127,13 @@ export class ChartController {
 		summary: 'Busca percentuais quadrianuais dos Charts pelo analysis e intervalo de datas.',
 		description: 'Este endpoint busca percentuais quadrianuais na tabela TB_Chart com base nas datas fornecidas.',
 	})
-	@ApiQuery({ name: 'analysis', required: true, description: 'Tipo de análise. Exemplo: erosão, GEE, NH3.' })
-	@ApiQuery({ name: 'startDate', required: true, description: 'Data inicial no formato YYYY-MM-DD.' })
-	@ApiQuery({ name: 'endDate', required: true, description: 'Data final no formato YYYY-MM-DD.' })
+	@ApiQuery({ name: 'analysis', required: true, description: 'Tipo de análise. Exemplo: erosão, GEE, NH3.', example: 'orgânicas', enum: ['erosão', 'GEE', 'NH3', 'NPK', 'orgânicas', 'pesticidas', 'poluição'] })
+	@ApiQuery({ name: 'startDate', required: true, description: 'Data inicial no formato YYYY-MM-DD.', example: '1990-01-01' })
+	@ApiQuery({ name: 'endDate', required: true, description: 'Data final no formato YYYY-MM-DD.', example: '1995-12-31' })
+	@ApiQuery({ name: 'country', required: false, description: 'O país para o qual os dados devem ser retornados. Opções: BR, US, FR, etc.', example: 'BR', enum: ['BR', 'US', 'FR'] })
+	@ApiQuery({ name: 'state', required: false, description: 'O estado para o qual os dados devem ser retornados. Opções: SP, RJ, MG, etc.', example: 'SP', enum: [ 'AC', 'MS', 'RS', 'CE', 'RO', 'SC', 'SE', 'AP', 'PB', 'AL', 'PE', 'PR', 'RJ', 'MT', 'DF', 'AM', 'BA', 'SP', 'ES', 'PI', 'PA', 'RR', 'MA', 'TO', 'GO', 'RN', 'MG' ],})
+	@ApiQuery({ name: 'city', required: false, description: 'O label para o qual os dados devem ser retornados. Opções: São Paulo, Maceió, Manaus, etc.', example: 'São Paulo', enum: [	"Angra dos Reis", "Anápolis", "Aracaju", "Arapiraca", "Belo Horizonte", "Belém", "Blumenau", "Boa Vista", "Brasília", "Campina Grande", "Campinas", "Campo Grande", "Caruaru", "Caxias do Sul", "Contagem", "Cuiabá", "Curitiba", "Dourados", "Feira de Santana", "Florianópolis", "Fortaleza", "Goiânia", "Ilhéus", "Imperatriz", "Joinville", "João Pessoa", "Juazeiro do Norte", "Juiz de Fora", "Londrina", "Macapá", "Maceió", "Manaus", "Marabá", "Maringá", "Mossoró", "Natal", "Niterói", "Olinda", "Palmas", "Parintins", "Parnaíba", "Pelotas", "Porto Alegre", "Porto Velho", "Recife", "Rio Branco", "Rio de Janeiro", "Rondonópolis", "Salvador", "Santarém", "Santos", "Sobral", "São Luís", "São Paulo", "Teresina", "Uberlândia", "Vila Velha", "Vitória" ], })
+	@ApiQuery({ name: 'source', required: false, description: 'Instituições, organizações ou fontes de pesquisa para o qual os dados devem ser retornados. Opções: OCDE (Organização para a Cooperação e Desenvolvimento Econômico), IAC (Instituto Agronômico de Campinas), UNB (Universidade de Brasília), etc.', example: 'IAC', enum: ['OCDE', 'IAC', 'UNB'],})
 	@ApiResponse({ status: 200, description: 'Lista de percentuais quadrianuais.', type: [IStackedData] })
 	@Get('/sum-quadrennial')
 	async findQuadrennialSum(
@@ -137,9 +153,13 @@ export class ChartController {
 		summary: 'Busca percentuais pentanuais dos Charts pelo analysis e intervalo de datas.',
 		description: 'Este endpoint busca percentuais pentanuais na tabela TB_Chart com base nas datas fornecidas.',
 	})
-	@ApiQuery({ name: 'analysis', required: true, description: 'Tipo de análise. Exemplo: erosão, GEE, NH3.' })
-	@ApiQuery({ name: 'startDate', required: true, description: 'Data inicial no formato YYYY-MM-DD.' })
-	@ApiQuery({ name: 'endDate', required: true, description: 'Data final no formato YYYY-MM-DD.' })
+	@ApiQuery({ name: 'analysis', required: true, description: 'Tipo de análise. Exemplo: erosão, GEE, NH3.', example: 'orgânicas', enum: ['erosão', 'GEE', 'NH3', 'NPK', 'orgânicas', 'pesticidas', 'poluição'] })
+	@ApiQuery({ name: 'startDate', required: true, description: 'Data inicial no formato YYYY-MM-DD.', example: '1990-01-01' })
+	@ApiQuery({ name: 'endDate', required: true, description: 'Data final no formato YYYY-MM-DD.', example: '1995-12-31' })
+	@ApiQuery({ name: 'country', required: false, description: 'O país para o qual os dados devem ser retornados. Opções: BR, US, FR, etc.', example: 'BR', enum: ['BR', 'US', 'FR'] })
+	@ApiQuery({ name: 'state', required: false, description: 'O estado para o qual os dados devem ser retornados. Opções: SP, RJ, MG, etc.', example: 'SP', enum: [ 'AC', 'MS', 'RS', 'CE', 'RO', 'SC', 'SE', 'AP', 'PB', 'AL', 'PE', 'PR', 'RJ', 'MT', 'DF', 'AM', 'BA', 'SP', 'ES', 'PI', 'PA', 'RR', 'MA', 'TO', 'GO', 'RN', 'MG' ],})
+	@ApiQuery({ name: 'city', required: false, description: 'O label para o qual os dados devem ser retornados. Opções: São Paulo, Maceió, Manaus, etc.', example: 'São Paulo', enum: [	"Angra dos Reis", "Anápolis", "Aracaju", "Arapiraca", "Belo Horizonte", "Belém", "Blumenau", "Boa Vista", "Brasília", "Campina Grande", "Campinas", "Campo Grande", "Caruaru", "Caxias do Sul", "Contagem", "Cuiabá", "Curitiba", "Dourados", "Feira de Santana", "Florianópolis", "Fortaleza", "Goiânia", "Ilhéus", "Imperatriz", "Joinville", "João Pessoa", "Juazeiro do Norte", "Juiz de Fora", "Londrina", "Macapá", "Maceió", "Manaus", "Marabá", "Maringá", "Mossoró", "Natal", "Niterói", "Olinda", "Palmas", "Parintins", "Parnaíba", "Pelotas", "Porto Alegre", "Porto Velho", "Recife", "Rio Branco", "Rio de Janeiro", "Rondonópolis", "Salvador", "Santarém", "Santos", "Sobral", "São Luís", "São Paulo", "Teresina", "Uberlândia", "Vila Velha", "Vitória" ], })
+	@ApiQuery({ name: 'source', required: false, description: 'Instituições, organizações ou fontes de pesquisa para o qual os dados devem ser retornados. Opções: OCDE (Organização para a Cooperação e Desenvolvimento Econômico), IAC (Instituto Agronômico de Campinas), UNB (Universidade de Brasília), etc.', example: 'IAC', enum: ['OCDE', 'IAC', 'UNB'],})
 	@ApiResponse({ status: 200, description: 'Lista de percentuais pentanuais.', type: [IStackedData] })
 	@Get('/sum-quintennial')
 	async findQuintennialSum(
@@ -163,89 +183,9 @@ export class ChartController {
 	@ApiQuery({ name: 'startDate', required: true, description: 'Data inicial no formato YYYY-MM-DD.', example: '1990-01-01' })
 	@ApiQuery({ name: 'endDate', required: true, description: 'Data final no formato YYYY-MM-DD.', example: '1995-12-31' })
 	@ApiQuery({ name: 'country', required: false, description: 'O país para o qual os dados devem ser retornados. Opções: BR, US, FR, etc.', example: 'BR', enum: ['BR', 'US', 'FR'] })
-	@ApiQuery({
-		name: 'state',
-		required: false,
-		description: 'O estado para o qual os dados devem ser retornados. Opções: SP, RJ, MG, etc.',
-		example: 'SP',
-		enum: [
-			'AC', 'MS', 'RS', 'CE', 'RO', 'SC', 'SE', 'AP', 'PB', 'AL', 'PE', 'PR', 'RJ', 'MT',
-			'DF', 'AM', 'BA', 'SP', 'ES', 'PI', 'PA', 'RR', 'MA', 'TO', 'GO', 'RN', 'MG'
-		],
-	})
-	@ApiQuery({
-		name: 'city',
-		required: false,
-		description: 'O label para o qual os dados devem ser retornados. Opções: São Paulo, Maceió, Manaus, etc.',
-		example: 'São Paulo',
-		enum: [
-			'Rio Branco',
-			'Arapiraca',
-			'Maceió',
-			'Manaus',
-			'Parintins',
-			'Macapá',
-			'Feira de Santana',
-			'Ilhéus',
-			'Salvador',
-			'Fortaleza',
-			'Juazeiro do Norte',
-			'Sobral',
-			'Brasília',
-			'Vila Velha',
-			'Vitória',
-			'Anápolis',
-			'Goiânia',
-			'Imperatriz',
-			'São Luís',
-			'Belo Horizonte',
-			'Contagem',
-			'Juiz de Fora',
-			'Uberlândia',
-			'Campo Grande',
-			'Dourados',
-			'Cuiabá',
-			'Rondonópolis',
-			'Belém',
-			'Marabá',
-			'Santarém',
-			'Campina Grande',
-			'João Pessoa',
-			'Caruaru',
-			'Olinda',
-			'Recife',
-			'Parnaíba',
-			'Teresina',
-			'Curitiba',
-			'Londrina',
-			'Maringá',
-			'Angra dos Reis',
-			'Niterói',
-			'Rio de Janeiro',
-			'Mossoró',
-			'Natal',
-			'Porto Velho',
-			'Boa Vista',
-			'Caxias do Sul',
-			'Pelotas',
-			'Porto Alegre',
-			'Blumenau',
-			'Florianópolis',
-			'Joinville',
-			'Aracaju',
-			'Campinas',
-			'Santos',
-			'São Paulo',
-			'Palmas',
-		],
-	})
-	@ApiQuery({
-		name: 'source',
-		required: false,
-		description: 'Instituições, organizações ou fontes de pesquisa para o qual os dados devem ser retornados. Opções: OCDE (Organização para a Cooperação e Desenvolvimento Econômico), IAC (Instituto Agronômico de Campinas), UNB (Universidade de Brasília), etc.',
-		example: 'IAC',
-		enum: ['OCDE', 'IAC', 'UNB'],
-	})
+	@ApiQuery({ name: 'state', required: false, description: 'O estado para o qual os dados devem ser retornados. Opções: SP, RJ, MG, etc.', example: 'SP', enum: [ 'AC', 'MS', 'RS', 'CE', 'RO', 'SC', 'SE', 'AP', 'PB', 'AL', 'PE', 'PR', 'RJ', 'MT', 'DF', 'AM', 'BA', 'SP', 'ES', 'PI', 'PA', 'RR', 'MA', 'TO', 'GO', 'RN', 'MG' ],})
+	@ApiQuery({ name: 'city', required: false, description: 'O label para o qual os dados devem ser retornados. Opções: São Paulo, Maceió, Manaus, etc.', example: 'São Paulo', enum: [	"Angra dos Reis", "Anápolis", "Aracaju", "Arapiraca", "Belo Horizonte", "Belém", "Blumenau", "Boa Vista", "Brasília", "Campina Grande", "Campinas", "Campo Grande", "Caruaru", "Caxias do Sul", "Contagem", "Cuiabá", "Curitiba", "Dourados", "Feira de Santana", "Florianópolis", "Fortaleza", "Goiânia", "Ilhéus", "Imperatriz", "Joinville", "João Pessoa", "Juazeiro do Norte", "Juiz de Fora", "Londrina", "Macapá", "Maceió", "Manaus", "Marabá", "Maringá", "Mossoró", "Natal", "Niterói", "Olinda", "Palmas", "Parintins", "Parnaíba", "Pelotas", "Porto Alegre", "Porto Velho", "Recife", "Rio Branco", "Rio de Janeiro", "Rondonópolis", "Salvador", "Santarém", "Santos", "Sobral", "São Luís", "São Paulo", "Teresina", "Uberlândia", "Vila Velha", "Vitória" ], })
+	@ApiQuery({ name: 'source', required: false, description: 'Instituições, organizações ou fontes de pesquisa para o qual os dados devem ser retornados. Opções: OCDE (Organização para a Cooperação e Desenvolvimento Econômico), IAC (Instituto Agronômico de Campinas), UNB (Universidade de Brasília), etc.', example: 'IAC', enum: ['OCDE', 'IAC', 'UNB'],})
 	@ApiResponse({ status: 200, description: 'Lista de percentuais anuais.', type: [IStackedData] })
 	@Get('/percentage-annual')
 	async findAnnualPercentage(
@@ -265,9 +205,13 @@ export class ChartController {
 		summary: 'Busca percentuais bianuais dos Charts pelo analysis e intervalo de datas.',
 		description: 'Este endpoint busca percentuais bianuais na tabela TB_Chart com base nas datas fornecidas.',
 	})
-	@ApiQuery({ name: 'analysis', required: true, description: 'Tipo de análise. Exemplo: erosão, GEE, NH3.' })
-	@ApiQuery({ name: 'startDate', required: true, description: 'Data inicial no formato YYYY-MM-DD.' })
-	@ApiQuery({ name: 'endDate', required: true, description: 'Data final no formato YYYY-MM-DD.' })
+	@ApiQuery({ name: 'analysis', required: true, description: 'Tipo de análise. Exemplo: erosão, GEE, NH3.', example: 'orgânicas', enum: ['erosão', 'GEE', 'NH3', 'NPK', 'orgânicas', 'pesticidas', 'poluição'] })
+	@ApiQuery({ name: 'startDate', required: true, description: 'Data inicial no formato YYYY-MM-DD.', example: '1990-01-01' })
+	@ApiQuery({ name: 'endDate', required: true, description: 'Data final no formato YYYY-MM-DD.', example: '1995-12-31' })
+	@ApiQuery({ name: 'country', required: false, description: 'O país para o qual os dados devem ser retornados. Opções: BR, US, FR, etc.', example: 'BR', enum: ['BR', 'US', 'FR'] })
+	@ApiQuery({ name: 'state', required: false, description: 'O estado para o qual os dados devem ser retornados. Opções: SP, RJ, MG, etc.', example: 'SP', enum: [ 'AC', 'MS', 'RS', 'CE', 'RO', 'SC', 'SE', 'AP', 'PB', 'AL', 'PE', 'PR', 'RJ', 'MT', 'DF', 'AM', 'BA', 'SP', 'ES', 'PI', 'PA', 'RR', 'MA', 'TO', 'GO', 'RN', 'MG' ],})
+	@ApiQuery({ name: 'city', required: false, description: 'O label para o qual os dados devem ser retornados. Opções: São Paulo, Maceió, Manaus, etc.', example: 'São Paulo', enum: [	"Angra dos Reis", "Anápolis", "Aracaju", "Arapiraca", "Belo Horizonte", "Belém", "Blumenau", "Boa Vista", "Brasília", "Campina Grande", "Campinas", "Campo Grande", "Caruaru", "Caxias do Sul", "Contagem", "Cuiabá", "Curitiba", "Dourados", "Feira de Santana", "Florianópolis", "Fortaleza", "Goiânia", "Ilhéus", "Imperatriz", "Joinville", "João Pessoa", "Juazeiro do Norte", "Juiz de Fora", "Londrina", "Macapá", "Maceió", "Manaus", "Marabá", "Maringá", "Mossoró", "Natal", "Niterói", "Olinda", "Palmas", "Parintins", "Parnaíba", "Pelotas", "Porto Alegre", "Porto Velho", "Recife", "Rio Branco", "Rio de Janeiro", "Rondonópolis", "Salvador", "Santarém", "Santos", "Sobral", "São Luís", "São Paulo", "Teresina", "Uberlândia", "Vila Velha", "Vitória" ], })
+	@ApiQuery({ name: 'source', required: false, description: 'Instituições, organizações ou fontes de pesquisa para o qual os dados devem ser retornados. Opções: OCDE (Organização para a Cooperação e Desenvolvimento Econômico), IAC (Instituto Agronômico de Campinas), UNB (Universidade de Brasília), etc.', example: 'IAC', enum: ['OCDE', 'IAC', 'UNB'],})
 	@ApiResponse({ status: 200, description: 'Lista de percentuais bianuais.', type: [IStackedData] })
 	@Get('/percentage-biennial')
 	async findBiennialPercentage(
@@ -287,9 +231,13 @@ export class ChartController {
 		summary: 'Busca percentuais trianuais dos Charts pelo analysis e intervalo de datas.',
 		description: 'Este endpoint busca percentuais trianuais na tabela TB_Chart com base nas datas fornecidas.',
 	})
-	@ApiQuery({ name: 'analysis', required: true, description: 'Tipo de análise. Exemplo: erosão, GEE, NH3.' })
-	@ApiQuery({ name: 'startDate', required: true, description: 'Data inicial no formato YYYY-MM-DD.' })
-	@ApiQuery({ name: 'endDate', required: true, description: 'Data final no formato YYYY-MM-DD.' })
+	@ApiQuery({ name: 'analysis', required: true, description: 'Tipo de análise. Exemplo: erosão, GEE, NH3.', example: 'orgânicas', enum: ['erosão', 'GEE', 'NH3', 'NPK', 'orgânicas', 'pesticidas', 'poluição'] })
+	@ApiQuery({ name: 'startDate', required: true, description: 'Data inicial no formato YYYY-MM-DD.', example: '1990-01-01' })
+	@ApiQuery({ name: 'endDate', required: true, description: 'Data final no formato YYYY-MM-DD.', example: '1995-12-31' })
+	@ApiQuery({ name: 'country', required: false, description: 'O país para o qual os dados devem ser retornados. Opções: BR, US, FR, etc.', example: 'BR', enum: ['BR', 'US', 'FR'] })
+	@ApiQuery({ name: 'state', required: false, description: 'O estado para o qual os dados devem ser retornados. Opções: SP, RJ, MG, etc.', example: 'SP', enum: [ 'AC', 'MS', 'RS', 'CE', 'RO', 'SC', 'SE', 'AP', 'PB', 'AL', 'PE', 'PR', 'RJ', 'MT', 'DF', 'AM', 'BA', 'SP', 'ES', 'PI', 'PA', 'RR', 'MA', 'TO', 'GO', 'RN', 'MG' ],})
+	@ApiQuery({ name: 'city', required: false, description: 'O label para o qual os dados devem ser retornados. Opções: São Paulo, Maceió, Manaus, etc.', example: 'São Paulo', enum: [	"Angra dos Reis", "Anápolis", "Aracaju", "Arapiraca", "Belo Horizonte", "Belém", "Blumenau", "Boa Vista", "Brasília", "Campina Grande", "Campinas", "Campo Grande", "Caruaru", "Caxias do Sul", "Contagem", "Cuiabá", "Curitiba", "Dourados", "Feira de Santana", "Florianópolis", "Fortaleza", "Goiânia", "Ilhéus", "Imperatriz", "Joinville", "João Pessoa", "Juazeiro do Norte", "Juiz de Fora", "Londrina", "Macapá", "Maceió", "Manaus", "Marabá", "Maringá", "Mossoró", "Natal", "Niterói", "Olinda", "Palmas", "Parintins", "Parnaíba", "Pelotas", "Porto Alegre", "Porto Velho", "Recife", "Rio Branco", "Rio de Janeiro", "Rondonópolis", "Salvador", "Santarém", "Santos", "Sobral", "São Luís", "São Paulo", "Teresina", "Uberlândia", "Vila Velha", "Vitória" ], })
+	@ApiQuery({ name: 'source', required: false, description: 'Instituições, organizações ou fontes de pesquisa para o qual os dados devem ser retornados. Opções: OCDE (Organização para a Cooperação e Desenvolvimento Econômico), IAC (Instituto Agronômico de Campinas), UNB (Universidade de Brasília), etc.', example: 'IAC', enum: ['OCDE', 'IAC', 'UNB'],})
 	@ApiResponse({ status: 200, description: 'Lista de percentuais trianuais.', type: [IStackedData] })
 	@Get('/percentage-triennial')
 	async findTriennialPercentage(
@@ -309,9 +257,13 @@ export class ChartController {
 		summary: 'Busca percentuais quadrianuais dos Charts pelo analysis e intervalo de datas.',
 		description: 'Este endpoint busca percentuais quadrianuais na tabela TB_Chart com base nas datas fornecidas.',
 	})
-	@ApiQuery({ name: 'analysis', required: true, description: 'Tipo de análise. Exemplo: erosão, GEE, NH3.' })
-	@ApiQuery({ name: 'startDate', required: true, description: 'Data inicial no formato YYYY-MM-DD.' })
-	@ApiQuery({ name: 'endDate', required: true, description: 'Data final no formato YYYY-MM-DD.' })
+	@ApiQuery({ name: 'analysis', required: true, description: 'Tipo de análise. Exemplo: erosão, GEE, NH3.', example: 'orgânicas', enum: ['erosão', 'GEE', 'NH3', 'NPK', 'orgânicas', 'pesticidas', 'poluição'] })
+	@ApiQuery({ name: 'startDate', required: true, description: 'Data inicial no formato YYYY-MM-DD.', example: '1990-01-01' })
+	@ApiQuery({ name: 'endDate', required: true, description: 'Data final no formato YYYY-MM-DD.', example: '1995-12-31' })
+	@ApiQuery({ name: 'country', required: false, description: 'O país para o qual os dados devem ser retornados. Opções: BR, US, FR, etc.', example: 'BR', enum: ['BR', 'US', 'FR'] })
+	@ApiQuery({ name: 'state', required: false, description: 'O estado para o qual os dados devem ser retornados. Opções: SP, RJ, MG, etc.', example: 'SP', enum: [ 'AC', 'MS', 'RS', 'CE', 'RO', 'SC', 'SE', 'AP', 'PB', 'AL', 'PE', 'PR', 'RJ', 'MT', 'DF', 'AM', 'BA', 'SP', 'ES', 'PI', 'PA', 'RR', 'MA', 'TO', 'GO', 'RN', 'MG' ],})
+	@ApiQuery({ name: 'city', required: false, description: 'O label para o qual os dados devem ser retornados. Opções: São Paulo, Maceió, Manaus, etc.', example: 'São Paulo', enum: [	"Angra dos Reis", "Anápolis", "Aracaju", "Arapiraca", "Belo Horizonte", "Belém", "Blumenau", "Boa Vista", "Brasília", "Campina Grande", "Campinas", "Campo Grande", "Caruaru", "Caxias do Sul", "Contagem", "Cuiabá", "Curitiba", "Dourados", "Feira de Santana", "Florianópolis", "Fortaleza", "Goiânia", "Ilhéus", "Imperatriz", "Joinville", "João Pessoa", "Juazeiro do Norte", "Juiz de Fora", "Londrina", "Macapá", "Maceió", "Manaus", "Marabá", "Maringá", "Mossoró", "Natal", "Niterói", "Olinda", "Palmas", "Parintins", "Parnaíba", "Pelotas", "Porto Alegre", "Porto Velho", "Recife", "Rio Branco", "Rio de Janeiro", "Rondonópolis", "Salvador", "Santarém", "Santos", "Sobral", "São Luís", "São Paulo", "Teresina", "Uberlândia", "Vila Velha", "Vitória" ], })
+	@ApiQuery({ name: 'source', required: false, description: 'Instituições, organizações ou fontes de pesquisa para o qual os dados devem ser retornados. Opções: OCDE (Organização para a Cooperação e Desenvolvimento Econômico), IAC (Instituto Agronômico de Campinas), UNB (Universidade de Brasília), etc.', example: 'IAC', enum: ['OCDE', 'IAC', 'UNB'],})
 	@ApiResponse({ status: 200, description: 'Lista de percentuais quadrianuais.', type: [IStackedData] })
 	@Get('/percentage-quadrennial')
 	async findQuadrennialPercentage(
@@ -331,9 +283,13 @@ export class ChartController {
 		summary: 'Busca percentuais pentanuais dos Charts pelo analysis e intervalo de datas.',
 		description: 'Este endpoint busca percentuais pentanuais na tabela TB_Chart com base nas datas fornecidas.',
 	})
-	@ApiQuery({ name: 'analysis', required: true, description: 'Tipo de análise. Exemplo: erosão, GEE, NH3.' })
-	@ApiQuery({ name: 'startDate', required: true, description: 'Data inicial no formato YYYY-MM-DD.' })
-	@ApiQuery({ name: 'endDate', required: true, description: 'Data final no formato YYYY-MM-DD.' })
+	@ApiQuery({ name: 'analysis', required: true, description: 'Tipo de análise. Exemplo: erosão, GEE, NH3.', example: 'orgânicas', enum: ['erosão', 'GEE', 'NH3', 'NPK', 'orgânicas', 'pesticidas', 'poluição'] })
+	@ApiQuery({ name: 'startDate', required: true, description: 'Data inicial no formato YYYY-MM-DD.', example: '1990-01-01' })
+	@ApiQuery({ name: 'endDate', required: true, description: 'Data final no formato YYYY-MM-DD.', example: '1995-12-31' })
+	@ApiQuery({ name: 'country', required: false, description: 'O país para o qual os dados devem ser retornados. Opções: BR, US, FR, etc.', example: 'BR', enum: ['BR', 'US', 'FR'] })
+	@ApiQuery({ name: 'state', required: false, description: 'O estado para o qual os dados devem ser retornados. Opções: SP, RJ, MG, etc.', example: 'SP', enum: [ 'AC', 'MS', 'RS', 'CE', 'RO', 'SC', 'SE', 'AP', 'PB', 'AL', 'PE', 'PR', 'RJ', 'MT', 'DF', 'AM', 'BA', 'SP', 'ES', 'PI', 'PA', 'RR', 'MA', 'TO', 'GO', 'RN', 'MG' ],})
+	@ApiQuery({ name: 'city', required: false, description: 'O label para o qual os dados devem ser retornados. Opções: São Paulo, Maceió, Manaus, etc.', example: 'São Paulo', enum: [	"Angra dos Reis", "Anápolis", "Aracaju", "Arapiraca", "Belo Horizonte", "Belém", "Blumenau", "Boa Vista", "Brasília", "Campina Grande", "Campinas", "Campo Grande", "Caruaru", "Caxias do Sul", "Contagem", "Cuiabá", "Curitiba", "Dourados", "Feira de Santana", "Florianópolis", "Fortaleza", "Goiânia", "Ilhéus", "Imperatriz", "Joinville", "João Pessoa", "Juazeiro do Norte", "Juiz de Fora", "Londrina", "Macapá", "Maceió", "Manaus", "Marabá", "Maringá", "Mossoró", "Natal", "Niterói", "Olinda", "Palmas", "Parintins", "Parnaíba", "Pelotas", "Porto Alegre", "Porto Velho", "Recife", "Rio Branco", "Rio de Janeiro", "Rondonópolis", "Salvador", "Santarém", "Santos", "Sobral", "São Luís", "São Paulo", "Teresina", "Uberlândia", "Vila Velha", "Vitória" ], })
+	@ApiQuery({ name: 'source', required: false, description: 'Instituições, organizações ou fontes de pesquisa para o qual os dados devem ser retornados. Opções: OCDE (Organização para a Cooperação e Desenvolvimento Econômico), IAC (Instituto Agronômico de Campinas), UNB (Universidade de Brasília), etc.', example: 'IAC', enum: ['OCDE', 'IAC', 'UNB'],})
 	@ApiResponse({ status: 200, description: 'Lista de percentuais pentanuais.', type: [IStackedData] })
 	@Get('/percentage-quintennial')
 	async findQuintennialPercentage(
