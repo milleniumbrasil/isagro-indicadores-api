@@ -319,7 +319,8 @@ export class ChartService {
 							Report.end_period_group,
 							Report.total_value,
 							Report.total_count,
-							ROUND((Report.total_value / NULLIF(PeriodTotals.total_value_period, 0)) * 100, 2) AS percentual_total
+							TotalSum.total_value_all_periods,
+							ROUND((CAST(Report.total_value AS DECIMAL) / NULLIF(TotalSum.total_value_all_periods, 0)) * 100, 4) AS percentual_total
 						FROM (
 							SELECT
 								EXTRACT(YEAR FROM tb_chart.period) AS start_period_group,
@@ -333,17 +334,13 @@ export class ChartService {
 								EXTRACT(YEAR FROM tb_chart.period)
 							ORDER BY start_period_group ASC
 						) AS Report
-						JOIN (
+						CROSS JOIN (
 							SELECT
-								EXTRACT(YEAR FROM tb_chart.period) AS start_period_group,
-								SUM(tb_chart.value) AS total_value_period
+								SUM(CAST(tb_chart.value AS DECIMAL)) AS total_value_all_periods
 							FROM
 								tb_chart
 									${whereClause}
-							GROUP BY
-								EXTRACT(YEAR FROM tb_chart.period)
-						) AS PeriodTotals
-						ON Report.start_period_group = PeriodTotals.start_period_group
+						) AS TotalSum
 						ORDER BY
 							Report.start_period_group ASC;
 
