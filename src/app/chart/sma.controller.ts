@@ -6,7 +6,7 @@ import { IStackedData } from './IStackedData';
 
 @ApiTags(`Cálculos de Média Móvel Simples (SMA)`)
 @Controller('sma')
-export class MobileAverageController {
+export class SMAController {
 
 	constructor(private readonly chartService: ChartService) { }
 
