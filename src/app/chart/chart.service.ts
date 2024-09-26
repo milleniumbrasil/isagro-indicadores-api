@@ -183,7 +183,7 @@ export class ChartService {
 
         return result.map((item: any) => ({
             period: item.period_group,
-            entry: [item.label, Math.round(item.percentual)],
+            entry: [item.label, item.percentual],
         }));
     }
 
