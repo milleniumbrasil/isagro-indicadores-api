@@ -172,8 +172,6 @@ export class ChartService {
 				X.period_group ASC, X.label ASC;
         `;
 
-		this.logger.log(`Query: ${query}`);
-
         const result = await queryRunner.query(query);
         await queryRunner.release();
 
@@ -204,30 +202,54 @@ export class ChartService {
 		const whereClause = this.getWhereClause(analysis, label, startDate, endDate, country, state, city, source);
 
         const query = `
-            SELECT
-                FLOOR(EXTRACT(YEAR FROM period) / 2) * 2 AS period_group,
-                label,
-                ROUND(AVG(value), 2) AS average_value
-            FROM
-                tb_chart
-            ${whereClause}
-            GROUP BY
-                FLOOR(EXTRACT(YEAR FROM period) / 2) * 2, label
-            ORDER BY
-                period_group ASC, label ASC;
+					SELECT
+						Report.start_period_group,
+						Report.end_period_group,
+						Report.total_value,
+						Report.total_count,
+						ROUND((Report.total_value / NULLIF(TotalSum.total_value_all_periods, 0)) * 100, 2) AS percentual_total
+					FROM (
+						SELECT
+							FLOOR(EXTRACT(YEAR FROM tb_chart.period) / 2) * 2 AS start_period_group,
+							(FLOOR(EXTRACT(YEAR FROM tb_chart.period) / 2) * 2) + 1 AS end_period_group,
+							SUM(tb_chart.value) AS total_value,
+							COUNT(tb_chart.value) AS total_count
+						FROM
+							tb_chart
+            			${whereClause}
+						GROUP BY
+							FLOOR(EXTRACT(YEAR FROM tb_chart.period) / 2)
+					) AS Report
+					CROSS JOIN (
+						SELECT
+							SUM(CAST(tb_chart.value AS DECIMAL)) AS total_value_all_periods
+						FROM
+							tb_chart
+            			${whereClause}
+					) AS TotalSum
+					ORDER BY
+						Report.start_period_group ASC;
         `;
 
+
+
         const result = await queryRunner.query(query);
+		this.logger.log(`Result: ${JSON.stringify(result, null, 2)}`);
+
         await queryRunner.release();
 
         if (!result || result.length === 0) {
             throw new NotFoundException('Nenhum dado encontrado para o período especificado');
         }
 
-        return result.map((item: any) => ({
-            period: item.period_group,
-            entry: [item.label, Math.round(item.average_value)],
+        const stackedData = result.map((item: any) => ({
+            period: `${item.start_period_group}-${item.end_period_group}`,
+            entry: [analysis, item.percentual_total],
         }));
+		
+		this.logger.log(`StackedData: ${JSON.stringify(stackedData, null, 2)}`);
+
+		return stackedData;
     }
 
     async findPercentageTriennial(
@@ -267,8 +289,8 @@ export class ChartService {
         }
 
         return result.map((item: any) => ({
-            period: item.period_group,
-            entry: [item.label, Math.round(item.average_value)],
+            period: `${item.start_period_group}-${item.end_period_group}`,
+            entry: [analysis, item.percentual_total],
         }));
     }
 
