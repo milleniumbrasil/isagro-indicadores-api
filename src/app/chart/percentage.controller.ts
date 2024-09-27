@@ -13,9 +13,9 @@ export class PercentageController {
 	@ApiOperation({
 		summary: `Percentual de valores anuais`,
 		description: `
-		Calcula o percentual de valores totais de um ano específico em relação ao valor acumulado de todos os anos no intervalo definido.
+Calcula o percentual de valores totais de um ano específico em relação ao valor acumulado de todos os anos no intervalo definido.
 
-		Este endpoint retorna a soma dos valores de cada ano e o percentual que eles representam em relação ao total acumulado de todos os anos no intervalo. Este cálculo é útil para entender a contribuição de cada ano no contexto de um período maior.
+Este endpoint retorna a soma dos valores de cada ano e o percentual que eles representam em relação ao total acumulado de todos os anos no intervalo. Este cálculo é útil para entender a contribuição de cada ano no contexto de um período maior.
 		`
 	})
 	@ApiQuery({ name: 'analysis', required: true, description: 'Tipo de análise. Exemplo: erosão, GEE, NH3.', example: 'orgânicas', enum: ['erosão', 'GEE', 'NH3', 'NPK', 'orgânicas', 'pesticidas', 'poluição'] })
@@ -45,9 +45,9 @@ export class PercentageController {
 	@ApiOperation({
 		summary: `Percentual de valores bienais`,
 		description: `
-		Calcula o percentual de valores acumulados em períodos bienais em relação ao valor acumulado de todos os anos no intervalo definido.
+Calcula o percentual de valores acumulados em períodos bienais em relação ao valor acumulado de todos os anos no intervalo definido.
 
-		Este endpoint retorna a soma dos valores para períodos de dois anos e o percentual que eles representam em relação ao total acumulado. Isso oferece uma perspectiva bienal da contribuição de cada par de anos no contexto de um período maior.
+Este endpoint retorna a soma dos valores para períodos de dois anos e o percentual que eles representam em relação ao total acumulado. Isso oferece uma perspectiva bienal da contribuição de cada par de anos no contexto de um período maior.
 		`
 	})
 	@ApiQuery({ name: 'analysis', required: true, description: 'Tipo de análise. Exemplo: erosão, GEE, NH3.', example: 'orgânicas', enum: ['erosão', 'GEE', 'NH3', 'NPK', 'orgânicas', 'pesticidas', 'poluição'] })
@@ -77,9 +77,9 @@ export class PercentageController {
 	@ApiOperation({
 		summary: `Percentual de valores trienais`,
 		description: `
-		Calcula o percentual de valores acumulados em períodos trienais em relação ao valor acumulado de todos os anos no intervalo definido.
+Calcula o percentual de valores acumulados em períodos trienais em relação ao valor acumulado de todos os anos no intervalo definido.
 
-		Este endpoint retorna a soma dos valores para períodos de três anos e o percentual que eles representam em relação ao total acumulado. Isso oferece uma perspectiva trienal da contribuição de cada grupo de três anos no contexto de um período maior.
+Este endpoint retorna a soma dos valores para períodos de três anos e o percentual que eles representam em relação ao total acumulado. Isso oferece uma perspectiva trienal da contribuição de cada grupo de três anos no contexto de um período maior.
 		`
 	})
 	@ApiQuery({ name: 'analysis', required: true, description: 'Tipo de análise. Exemplo: erosão, GEE, NH3.', example: 'orgânicas', enum: ['erosão', 'GEE', 'NH3', 'NPK', 'orgânicas', 'pesticidas', 'poluição'] })
@@ -109,9 +109,9 @@ export class PercentageController {
 	@ApiOperation({
 		summary: `Percentual de valores quadrenais`,
 		description: `
-		Calcula o percentual de valores acumulados em períodos de quatro anos em relação ao valor acumulado de todos os anos no intervalo definido.
+Calcula o percentual de valores acumulados em períodos de quatro anos em relação ao valor acumulado de todos os anos no intervalo definido.
 
-		Este endpoint retorna a soma dos valores para períodos de quatro anos e o percentual que eles representam em relação ao total acumulado. Isso oferece uma visão quadrenal da evolução dos dados no contexto de um período maior, permitindo identificar tendências ao longo desses períodos de análise.
+Este endpoint retorna a soma dos valores para períodos de quatro anos e o percentual que eles representam em relação ao total acumulado. Isso oferece uma visão quadrenal da evolução dos dados no contexto de um período maior, permitindo identificar tendências ao longo desses períodos de análise.
 		`
 	})
 	@ApiQuery({ name: 'analysis', required: true, description: 'Tipo de análise. Exemplo: erosão, GEE, NH3.', example: 'orgânicas', enum: ['erosão', 'GEE', 'NH3', 'NPK', 'orgânicas', 'pesticidas', 'poluição'] })
@@ -141,9 +141,9 @@ export class PercentageController {
 	@ApiOperation({
 		summary: `Percentual de valores quinquenais`,
 		description: `
-		Calcula o percentual de valores acumulados em períodos quinquenais em relação ao valor acumulado de todos os anos no intervalo definido.
+Calcula o percentual de valores acumulados em períodos quinquenais em relação ao valor acumulado de todos os anos no intervalo definido.
 
-		Este endpoint retorna a soma dos valores para períodos de cinco anos e o percentual que eles representam em relação ao total acumulado. Isso oferece uma visão quinquenal da evolução dos dados no contexto de um período maior.
+Este endpoint retorna a soma dos valores para períodos de cinco anos e o percentual que eles representam em relação ao total acumulado. Isso oferece uma visão quinquenal da evolução dos dados no contexto de um período maior.
 		`
 	})
 	@ApiQuery({ name: 'analysis', required: true, description: 'Tipo de análise. Exemplo: erosão, GEE, NH3.', example: 'orgânicas', enum: ['erosão', 'GEE', 'NH3', 'NPK', 'orgânicas', 'pesticidas', 'poluição'] })
