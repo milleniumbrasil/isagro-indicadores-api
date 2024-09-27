@@ -64,10 +64,6 @@ Além disso, cada endpoint está organizado por tags que refletem as funcionalid
 `)
       .setVersion("1.0")
       .addTag("system")
-      .addBearerAuth(
-        { type: "http", scheme: "bearer", bearerFormat: "JWT" },
-        "access_token",
-      )
       .build();
     const document = SwaggerModule.createDocument(app, config);
 
