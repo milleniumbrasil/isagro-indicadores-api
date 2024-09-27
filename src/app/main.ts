@@ -44,11 +44,11 @@ async function bootstrap() {
 
     const config = new DocumentBuilder()
       .setTitle(microserviceName)
-      .setDescription(`**ISAgro**
+      .setDescription(`# ISAgro
 
 Esta documentação oferece uma visão abrangente e detalhada de todas as APIs disponíveis neste microserviço, facilitando a integração e utilização de suas funcionalidades. O **${microserviceName}** fornece serviços especializados, abrangendo desde a manipulação de dados, geração de relatórios até cálculos estatísticos avançados, conforme o escopo da aplicação.
 
-Cada endpoint está descrito de forma clara e precisa, incluindo as definições de parâmetros, respostas esperadas, e requisitos de autenticação. A segurança das transações é garantida por meio do uso de tokens JWT (JSON Web Token), assegurando que o acesso às APIs seja devidamente protegido.
+Cada endpoint está descrito de forma clara e precisa, incluindo as definições de parâmetros, respostas esperadas, e requisitos.
 
 Na versão 1.0, são apresentadas operações essenciais, como consultas de dados, geração de relatórios e cálculos estatísticos distribuídos em diferentes períodos (anual, bienal, trienal, etc.). Essas operações oferecem suporte a múltiplas análises e suas respectivas categorias, atendendo a uma vasta gama de necessidades analíticas. Exemplos práticos de requisições e respostas são fornecidos, ajudando desenvolvedores a utilizar as APIs corretamente e com eficiência.
 
