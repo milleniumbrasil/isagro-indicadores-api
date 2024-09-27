@@ -13,9 +13,9 @@ export class SumController {
 	@ApiOperation({
 		summary: `Soma valores agrupados para um período anual`,
 		description: `
-		Calcula a soma com base em intervalos anuais.
+Calcula a soma com base em intervalos anuais.
 
-  		A soma dos valores é uma técnica estatística utilizada para agregar informações em uma série temporal. Nesta consulta, os dados são filtrados com base em critérios como tipo de análise, rótulo, e período de tempo, agrupados por ano e rótulo. Isso oferece uma visão agregada dos dados ao longo do tempo, permitindo analisar a evolução dos valores totais dentro de cada ano.
+A soma dos valores é uma técnica estatística utilizada para agregar informações em uma série temporal. Nesta consulta, os dados são filtrados com base em critérios como tipo de análise, rótulo, e período de tempo, agrupados por ano e rótulo. Isso oferece uma visão agregada dos dados ao longo do tempo, permitindo analisar a evolução dos valores totais dentro de cada ano.
 		`
 	  })
 	@ApiQuery({ name: 'analysis', required: true, description: 'Tipo de análise. Exemplo: erosão, GEE, NH3.', example: 'orgânicas', enum: ['erosão', 'GEE', 'NH3', 'NPK', 'orgânicas', 'pesticidas', 'poluição'] })
@@ -49,9 +49,9 @@ export class SumController {
 	@ApiOperation({
 		summary: `Soma valores agrupados para um período bienal`,
 		description: `
-		Calcula a soma com base em intervalos bienais.
+Calcula a soma com base em intervalos bienais.
 
-  		A soma dos valores é uma técnica estatística utilizada para agregar informações em uma série temporal. Nesta consulta, os dados são filtrados com base em critérios como tipo de análise, rótulo, e período de tempo, agrupados por ano e rótulo. Isso oferece uma visão agregada dos dados ao longo do tempo, permitindo analisar a evolução dos valores totais dentro de cada período de anos.
+A soma dos valores é uma técnica estatística utilizada para agregar informações em uma série temporal. Nesta consulta, os dados são filtrados com base em critérios como tipo de análise, rótulo, e período de tempo, agrupados por ano e rótulo. Isso oferece uma visão agregada dos dados ao longo do tempo, permitindo analisar a evolução dos valores totais dentro de cada período de anos.
 		`
 	  })
 	@ApiQuery({ name: 'analysis', required: true, description: 'Tipo de análise. Exemplo: erosão, GEE, NH3.', example: 'orgânicas', enum: ['erosão', 'GEE', 'NH3', 'NPK', 'orgânicas', 'pesticidas', 'poluição'] })
@@ -85,9 +85,9 @@ export class SumController {
 	@ApiOperation({
 		summary: `Soma valores agrupados para um período trienal`,
 		description: `
-		Calcula a soma com base em intervalos trienais.
+Calcula a soma com base em intervalos trienais.
 
-  		A soma dos valores é uma técnica estatística utilizada para agregar informações em uma série temporal. Nesta consulta, os dados são filtrados com base em critérios como tipo de análise, rótulo, e período de tempo, agrupados por ano e rótulo. Isso oferece uma visão agregada dos dados ao longo do tempo, permitindo analisar a evolução dos valores totais dentro de cada período de anos.
+A soma dos valores é uma técnica estatística utilizada para agregar informações em uma série temporal. Nesta consulta, os dados são filtrados com base em critérios como tipo de análise, rótulo, e período de tempo, agrupados por ano e rótulo. Isso oferece uma visão agregada dos dados ao longo do tempo, permitindo analisar a evolução dos valores totais dentro de cada período de anos.
 		`
 	  })
 	@ApiQuery({ name: 'analysis', required: true, description: 'Tipo de análise. Exemplo: erosão, GEE, NH3.', example: 'orgânicas', enum: ['erosão', 'GEE', 'NH3', 'NPK', 'orgânicas', 'pesticidas', 'poluição'] })
@@ -121,9 +121,9 @@ export class SumController {
 	@ApiOperation({
 		summary: `Soma valores agrupados para um período quadrenal`,
 		description: `
-		Calcula a soma com base em intervalos quadrenais.
+Calcula a soma com base em intervalos quadrenais.
 
-  		A soma dos valores é uma técnica estatística utilizada para agregar informações em uma série temporal. Nesta consulta, os dados são filtrados com base em critérios como tipo de análise, rótulo, e período de tempo, agrupados por ano e rótulo. Isso oferece uma visão agregada dos dados ao longo do tempo, permitindo analisar a evolução dos valores totais dentro de cada período de anos.
+A soma dos valores é uma técnica estatística utilizada para agregar informações em uma série temporal. Nesta consulta, os dados são filtrados com base em critérios como tipo de análise, rótulo, e período de tempo, agrupados por ano e rótulo. Isso oferece uma visão agregada dos dados ao longo do tempo, permitindo analisar a evolução dos valores totais dentro de cada período de anos.
 		`
 	  })
 	@ApiQuery({ name: 'analysis', required: true, description: 'Tipo de análise. Exemplo: erosão, GEE, NH3.', example: 'orgânicas', enum: ['erosão', 'GEE', 'NH3', 'NPK', 'orgânicas', 'pesticidas', 'poluição'] })
@@ -157,9 +157,9 @@ export class SumController {
 	@ApiOperation({
 		summary: `Soma valores agrupados para um período quinquenal`,
 		description: `
-		Calcula a soma com base em intervalos quinquenais.
+Calcula a soma com base em intervalos quinquenais.
 
-  		A soma dos valores é uma técnica estatística utilizada para agregar informações em uma série temporal. Nesta consulta, os dados são filtrados com base em critérios como tipo de análise, rótulo, e período de tempo, agrupados por ano e rótulo. Isso oferece uma visão agregada dos dados ao longo do tempo, permitindo analisar a evolução dos valores totais dentro de cada período de anos.
+A soma dos valores é uma técnica estatística utilizada para agregar informações em uma série temporal. Nesta consulta, os dados são filtrados com base em critérios como tipo de análise, rótulo, e período de tempo, agrupados por ano e rótulo. Isso oferece uma visão agregada dos dados ao longo do tempo, permitindo analisar a evolução dos valores totais dentro de cada período de anos.
 		`
 	  })
 	@ApiQuery({ name: 'analysis', required: true, description: 'Tipo de análise. Exemplo: erosão, GEE, NH3.', example: 'orgânicas', enum: ['erosão', 'GEE', 'NH3', 'NPK', 'orgânicas', 'pesticidas', 'poluição'] })
