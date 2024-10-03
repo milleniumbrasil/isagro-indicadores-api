@@ -436,33 +436,46 @@ export class ChartService {
 
         const query = `
 					SELECT
-						Report.start_period_group,
-						Report.end_period_group,
-						Report.total_value,
-						Report.total_count,
-						ROUND((Report.total_value / NULLIF(PeriodTotals.total_value_period, 0)) * 100, 2) AS percentual_total
+							Report.label,
+							Report.start_period_group,
+							Report.end_period_group,
+							Report.total_value,
+							Report.total_count,
+							TotalSum.total_value_all_periods,
+							ROUND((CAST(Report.total_value AS DECIMAL) / NULLIF(TotalSum.total_value_all_periods, 0)) * 100, 4) AS media_total
 					FROM (
 						SELECT
-							FLOOR(EXTRACT(YEAR FROM tb_chart.period) / ${range}) * ${range} AS start_period_group,
-							(FLOOR(EXTRACT(YEAR FROM tb_chart.period) / ${range}) * ${range}) + ${range-1} AS end_period_group,
+							tb_chart.label,  -- Agrupando por rótulo
+							(EXTRACT(YEAR FROM tb_chart.period) / ${range}) * ${range} AS start_period_group,
+							((EXTRACT(YEAR FROM tb_chart.period) / ${range}) * ${range}) + ${range-1} AS end_period_group,
 							SUM(tb_chart.value) AS total_value,
 							COUNT(tb_chart.value) AS total_count
 						FROM
 							tb_chart
             				${whereClause}
 						GROUP BY
-							FLOOR(EXTRACT(YEAR FROM tb_chart.period) / ${range})
-						ORDER BY start_period_group ASC
+							tb_chart.label,  -- Agrupando também por rótulo
+							(EXTRACT(YEAR FROM tb_chart.period) / ${range}) * ${range}
+						ORDER BY start_period_group ASC, tb_chart.label ASC;
 					) AS Report
 					JOIN (
 						SELECT
-							FLOOR(EXTRACT(YEAR FROM tb_chart.period) / 2) * 2 AS start_period_group,
+							FLOOR(EXTRACT(YEAR FROM tb_chart.period) / ${range}) * ${range} AS start_period_group,
 							SUM(tb_chart.value) AS total_value_period
 						FROM
 							tb_chart
             				${whereClause}
 						GROUP BY
-							FLOOR(EXTRACT(YEAR FROM tb_chart.period) / 2)
+							FLOOR(EXTRACT(YEAR FROM tb_chart.period) / ${range})
+
+						SELECT
+							tb_chart.label,
+							SUM(CAST(tb_chart.value AS DECIMAL)) AS total_value_all_periods
+						FROM
+							tb_chart
+            				${whereClause}
+						GROUP BY
+							tb_chart.label
 					) AS PeriodTotals
 					ON Report.start_period_group = PeriodTotals.start_period_group
 					ORDER BY
