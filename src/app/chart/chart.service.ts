@@ -474,19 +474,16 @@ export class ChartService {
 			) AS Report
 			JOIN (
 				SELECT
-					tb_chart.label,
 					(EXTRACT(YEAR FROM tb_chart.period) / ${range}) * ${range} AS start_period_group,
 					SUM(CAST(tb_chart.value AS DECIMAL)) AS total_period
 				FROM
 					tb_chart
 				${whereClause}
 				GROUP BY
-					tb_chart.label,
 					(EXTRACT(YEAR FROM tb_chart.period) / ${range}) * ${range}
-			) AS PeriodTotals  -- Nome correto da subconsulta
+			) AS PeriodTotals
 			ON
-				Report.label = PeriodTotals.label
-				AND Report.start_period_group = PeriodTotals.start_period_group
+				Report.start_period_group = PeriodTotals.start_period_group
 			ORDER BY
 				Report.start_period_group ASC,
 				Report.label ASC;
@@ -501,7 +498,7 @@ export class ChartService {
 
 		// this.printStructure(result);
 		const stackedData = result.map((item: any) => ({
-			period: `${item.start_period_group}-${item.end_period_group}`,
+			period: `${Math.floor(item.start_period_group)}-${Math.floor(item.end_period_group)}`,
 			entry: [item.label, item.media_total],
 		}));
 
