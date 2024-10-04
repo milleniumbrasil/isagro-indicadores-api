@@ -432,82 +432,81 @@ export class ChartService {
     }
 
     async findMobileAverage(
-        analysis: string,
+		analysis: string,
 		range: number,
-        label?: string,
-        startDate?: string,
-        endDate?: string,
-        country?: string,
-        state?: string,
-        city?: string,
-        source?: string,
-    ): Promise<IStackedData[]> {
+		label?: string,
+		startDate?: string,
+		endDate?: string,
+		country?: string,
+		state?: string,
+		city?: string,
+		source?: string,
+	): Promise<IStackedData[]> {
 
-        this.logger.log(`Finding mobile-average stacked charts for analysis=${analysis}, range=${range}, label=${label}, startDate=${startDate}, endDate=${endDate}, country=${country}, state=${state}, city=${city}, source=${source}`);
+		this.logger.log(`Finding mobile-average stacked charts for analysis=${analysis}, range=${range}, label=${label}, startDate=${startDate}, endDate=${endDate}, country=${country}, state=${state}, city=${city}, source=${source}`);
 
-        const queryRunner = this.dataSourceService.getDataSource().createQueryRunner();
+		const queryRunner = this.dataSourceService.getDataSource().createQueryRunner();
 		const whereClause = this.getWhereClause(analysis, label, startDate, endDate, country, state, city, source);
 
-        const query = `
-					SELECT
-							Report.label,
-							Report.start_period_group,
-							Report.end_period_group,
-							Report.total_value,
-							Report.total_count,
-							TotalSum.total_period,
-							ROUND((CAST(Report.total_value AS DECIMAL) / NULLIF(TotalSum.total_period, 0)) * 100, 4) AS media_total
-					FROM (
-						SELECT
-							tb_chart.label,
-							(EXTRACT(YEAR FROM tb_chart.period) / ${range}) * ${range} AS start_period_group,
-							((EXTRACT(YEAR FROM tb_chart.period) / ${range}) * ${range}) + ${range-1} AS end_period_group,
-							SUM(tb_chart.value) AS total_value,
-							COUNT(tb_chart.value) AS total_count
-						FROM
-							tb_chart
-            				${whereClause}
-						GROUP BY
-							tb_chart.label,
-							(EXTRACT(YEAR FROM tb_chart.period) / ${range}) * ${range}
-						ORDER BY start_period_group ASC, tb_chart.label ASC
-					) AS Report
-					JOIN (
-						SELECT
-							tb_chart.label,
-        					(EXTRACT(YEAR FROM tb_chart.period) / ${range}) * ${range} AS start_period_group,
-							SUM(CAST(tb_chart.value AS DECIMAL)) AS total_period
-						FROM
-							tb_chart
-            				${whereClause}
-						GROUP BY
-							tb_chart.label,
-        					(EXTRACT(YEAR FROM tb_chart.period) / ${range}) * ${range}
-					) AS PeriodTotals
-					ON
-							Report.label = TotalSum.label
-							AND Report.start_period_group = TotalSum.start_period_group
-					ORDER BY
-							Report.start_period_group ASC,
-							Report.label ASC;
-        `;
+		const query = `
+			SELECT
+				Report.label,
+				Report.start_period_group,
+				Report.end_period_group,
+				Report.total_value,
+				Report.total_count,
+				PeriodTotals.total_period,  -- Alterado para PeriodTotals
+				ROUND((CAST(Report.total_value AS DECIMAL) / NULLIF(PeriodTotals.total_period, 0)) * 100, 4) AS media_total
+			FROM (
+				SELECT
+					tb_chart.label,
+					(EXTRACT(YEAR FROM tb_chart.period) / ${range}) * ${range} AS start_period_group,
+					((EXTRACT(YEAR FROM tb_chart.period) / ${range}) * ${range}) + ${range - 1} AS end_period_group,
+					SUM(tb_chart.value) AS total_value,
+					COUNT(tb_chart.value) AS total_count
+				FROM
+					tb_chart
+				${whereClause}
+				GROUP BY
+					tb_chart.label,
+					(EXTRACT(YEAR FROM tb_chart.period) / ${range}) * ${range}
+				ORDER BY start_period_group ASC, tb_chart.label ASC
+			) AS Report
+			JOIN (
+				SELECT
+					tb_chart.label,
+					(EXTRACT(YEAR FROM tb_chart.period) / ${range}) * ${range} AS start_period_group,
+					SUM(CAST(tb_chart.value AS DECIMAL)) AS total_period
+				FROM
+					tb_chart
+				${whereClause}
+				GROUP BY
+					tb_chart.label,
+					(EXTRACT(YEAR FROM tb_chart.period) / ${range}) * ${range}
+			) AS PeriodTotals  -- Nome correto da subconsulta
+			ON
+				Report.label = PeriodTotals.label
+				AND Report.start_period_group = PeriodTotals.start_period_group
+			ORDER BY
+				Report.start_period_group ASC,
+				Report.label ASC;
+		`;
 
-        const result = await queryRunner.query(query);
+		const result = await queryRunner.query(query);
+		await queryRunner.release();
 
-        await queryRunner.release();
+		if (!result || result.length === 0) {
+			throw new NotFoundException('Nenhum dado encontrado para o período especificado');
+		}
 
-        if (!result || result.length === 0) {
-            throw new NotFoundException('Nenhum dado encontrado para o período especificado');
-        }
-
-		this.printStructure(result);
-        const stackedData = result.map((item: any) => ({
-            period: `${item.start_period_group}-${item.end_period_group}`,
-            entry: [analysis, item.media_total],
-        }));
+		// this.printStructure(result);
+		const stackedData = result.map((item: any) => ({
+			period: `${item.start_period_group}-${item.end_period_group}`,
+			entry: [item.label, item.media_total],
+		}));
 
 		return stackedData;
-    }
+	}
 
     async findSumAnnual(
         analysis: string,
