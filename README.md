@@ -6,6 +6,14 @@ Este documento descreve a estrutura do banco de dados e os passos para sua cria√
 
 ![IS-Agro Indicadores API](public/isagro-indicadores-api-2024-10-04-16_00_18.png)
 
+ - Para subir o banco de dados e a API, execute o comando abaixo:
+ - 
+```bash
+cd .docker
+docker-compose up --build
+```
+
+
 ### Vantagens das Abordagens
 
 **external_id**:
