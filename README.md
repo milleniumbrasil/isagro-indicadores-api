@@ -13,7 +13,6 @@ cd .docker
 docker-compose up --build
 ```
 
-
 ### Vantagens das Abordagens
 
 **external_id**:
