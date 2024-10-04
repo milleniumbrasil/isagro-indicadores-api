@@ -1,6 +1,6 @@
-# Repositório do micro-serviço isagro-srv
+# Repositório do micro-serviço isagro-indicadores-api
 
-## isagro-srv Database
+## isagro-indicadores-api Database
 
 Este documento descreve a estrutura do banco de dados e os passos para sua criação, incluindo a definição das tabelas, colunas, comentários, funções e triggers. A motivação para a criação deste documento é fornecer um guia detalhado para a configuração do banco de dados, garantindo que todas as etapas sejam seguidas corretamente para uma implementação consistente. Este documento também explica as vantagens de utilizar colunas como `external_id`, funções e triggers diretamente no banco de dados, comparado com a implementação no backend.
 

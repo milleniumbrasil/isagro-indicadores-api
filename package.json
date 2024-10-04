@@ -1,7 +1,7 @@
 {
-  "name": "isagro-srv",
+  "name": "isagro-indicadores-api",
   "version": "1.0.0",
-  "description": "Este é o repositório de isagro-srv que por sua vez é um de microserviço baseado no Nest.js. Ele inclui um conjunto de configurações, dependências e scripts para facilitar o desenvolvimento, teste e implantação de microserviços construídos com o Nest.js.",
+  "description": "Este é o repositório de isagro-indicadores-api que por sua vez é um de microserviço baseado no Nest.js. Ele inclui um conjunto de configurações, dependências e scripts para facilitar o desenvolvimento, teste e implantação de microserviços construídos com o Nest.js.",
   "scripts": {
     "prebuild": "rimraf dist",
     "build": "nest build",
