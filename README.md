@@ -1,5 +1,12 @@
 # Repositório do micro-serviço isagro-indicadores-api
 
+![Node.js](https://img.shields.io/badge/Node.js-16.x-green)
+![Express](https://img.shields.io/badge/Express.js-4.x-blue)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-13-blue)
+![TypeScript](https://img.shields.io/badge/TypeScript-4.x-blue)
+![NestJS](https://img.shields.io/badge/NestJS-7.x-red)
+![Docker](https://img.shields.io/badge/Docker-blue)
+
 ## isagro-indicadores-api Database
 
 Este documento descreve a estrutura do banco de dados e os passos para sua criação, incluindo a definição das tabelas, colunas, comentários, funções e triggers. A motivação para a criação deste documento é fornecer um guia detalhado para a configuração do banco de dados, garantindo que todas as etapas sejam seguidas corretamente para uma implementação consistente. Este documento também explica as vantagens de utilizar colunas como `external_id`, funções e triggers diretamente no banco de dados, comparado com a implementação no backend.
