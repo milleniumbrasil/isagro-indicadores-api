@@ -28,10 +28,7 @@ async function bootstrap() {
     .getEnv()
     .get<string>("MICROSERVICE_NAME") || "Microservice";
 
-  const microservicchart = app
-    .get(EnvironmentService)
-    .getEnv()
-    .get<string>("PORT");
+  const microservicchart = process.env.PORT || 3001; // Fallback para a porta 3001
 
   const ds = app.get(DataSourceService).getDataSource();
   ds.initialize()
