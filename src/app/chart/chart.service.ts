@@ -10,6 +10,20 @@ export class ChartService {
 
 	constructor(private dataSourceService: DataSourceService) { }
 
+
+	protected printStructure = (obj, indent = 0): void => {
+		const indentation = ' '.repeat(indent);
+		Object.keys(obj).forEach(key => {
+			if (typeof obj[key] === 'object' && obj[key] !== null) {
+			console.log(`${indentation}${key}: {`);
+			this.printStructure(obj[key], indent + 2);  // Recursivamente imprime objetos internos
+			console.log(`${indentation}}`);
+			} else {
+			console.log(`${indentation}${key}: valor`);
+			}
+		});
+	}
+
 	protected toStackedData(chart: ChartEntity[]): IStackedData[] {
 		return chart.map(item => ({
 			period: item.period,
@@ -441,11 +455,11 @@ export class ChartService {
 							Report.end_period_group,
 							Report.total_value,
 							Report.total_count,
-							TotalSum.total_value_all_periods,
-							ROUND((CAST(Report.total_value AS DECIMAL) / NULLIF(TotalSum.total_value_all_periods, 0)) * 100, 4) AS media_total
+							TotalSum.total_period,
+							ROUND((CAST(Report.total_value AS DECIMAL) / NULLIF(TotalSum.total_period, 0)) * 100, 4) AS media_total
 					FROM (
 						SELECT
-							tb_chart.label,  -- Agrupando por rótulo
+							tb_chart.label,
 							(EXTRACT(YEAR FROM tb_chart.period) / ${range}) * ${range} AS start_period_group,
 							((EXTRACT(YEAR FROM tb_chart.period) / ${range}) * ${range}) + ${range-1} AS end_period_group,
 							SUM(tb_chart.value) AS total_value,
@@ -454,44 +468,42 @@ export class ChartService {
 							tb_chart
             				${whereClause}
 						GROUP BY
-							tb_chart.label,  -- Agrupando também por rótulo
+							tb_chart.label,
 							(EXTRACT(YEAR FROM tb_chart.period) / ${range}) * ${range}
-						ORDER BY start_period_group ASC, tb_chart.label ASC;
+						ORDER BY start_period_group ASC, tb_chart.label ASC
 					) AS Report
 					JOIN (
 						SELECT
-							FLOOR(EXTRACT(YEAR FROM tb_chart.period) / ${range}) * ${range} AS start_period_group,
-							SUM(tb_chart.value) AS total_value_period
-						FROM
-							tb_chart
-            				${whereClause}
-						GROUP BY
-							FLOOR(EXTRACT(YEAR FROM tb_chart.period) / ${range})
-
-						SELECT
 							tb_chart.label,
-							SUM(CAST(tb_chart.value AS DECIMAL)) AS total_value_all_periods
+        					(EXTRACT(YEAR FROM tb_chart.period) / ${range}) * ${range} AS start_period_group,
+							SUM(CAST(tb_chart.value AS DECIMAL)) AS total_period
 						FROM
 							tb_chart
             				${whereClause}
 						GROUP BY
-							tb_chart.label
+							tb_chart.label,
+        					(EXTRACT(YEAR FROM tb_chart.period) / ${range}) * ${range}
 					) AS PeriodTotals
-					ON Report.start_period_group = PeriodTotals.start_period_group
+					ON
+							Report.label = TotalSum.label
+							AND Report.start_period_group = TotalSum.start_period_group
 					ORDER BY
-						Report.start_period_group ASC;
+							Report.start_period_group ASC,
+							Report.label ASC;
         `;
 
         const result = await queryRunner.query(query);
+
         await queryRunner.release();
 
         if (!result || result.length === 0) {
             throw new NotFoundException('Nenhum dado encontrado para o período especificado');
         }
 
+		this.printStructure(result);
         const stackedData = result.map((item: any) => ({
             period: `${item.start_period_group}-${item.end_period_group}`,
-            entry: [analysis, item.percentual_total],
+            entry: [analysis, item.media_total],
         }));
 
 		return stackedData;
