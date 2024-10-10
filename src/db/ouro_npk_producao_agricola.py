@@ -1,6 +1,6 @@
 import os
-import psycopg2
 import csv
+import psycopg2
 from datetime import datetime
 
 # Configurações de conexão com o banco de dados
@@ -47,6 +47,22 @@ def insert_data_to_db():
 
     # Commit e fechamento da conexão
     conn.commit()
+
+    # Verifica se os dados foram inseridos
+    cursor.execute("SELECT COUNT(*) FROM public.tb_chart")
+    count = cursor.fetchone()[0]
+    print(f"\nTotal de registros na tabela tb_chart: {count}")
+
+    # Consulta todos os registros para exibir
+    cursor.execute("SELECT * FROM public.tb_chart LIMIT 10")
+    rows = cursor.fetchall()
+
+    # Exibe os primeiros 10 resultados
+    print("\nExibindo os primeiros 10 registros inseridos:")
+    for row in rows:
+        print(row)
+
+    # Fecha o cursor e a conexão
     cursor.close()
     conn.close()
 
