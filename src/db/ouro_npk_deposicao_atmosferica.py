@@ -38,6 +38,13 @@ def upsert_data_to_db():
             source = "Fonte desconhecida"
             analysis = "NPK"
 
+            # Conversão correta para float
+            try:
+                value = float(value)
+            except ValueError:
+                print(f"Valor inválido encontrado: {value}")
+                continue
+
             # Verificar se o registro já existe
             check_query = """
             SELECT 1 FROM public.tb_chart WHERE state = %s AND period = %s AND label = %s
@@ -52,14 +59,14 @@ def upsert_data_to_db():
                 SET value = %s, analysis = %s, updated_at = CURRENT_TIMESTAMP
                 WHERE state = %s AND period = %s AND label = %s
                 """
-                cursor.execute(update_query, (float(value), analysis, state, date, label))
+                cursor.execute(update_query, (value, analysis, state, date, label))
             else:
                 # Inserir um novo registro
                 insert_query = """
                 INSERT INTO public.tb_chart (country, state, city, source, period, label, value, analysis)
                 VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
                 """
-                cursor.execute(insert_query, (country, state, city, source, date, label, float(value), analysis))
+                cursor.execute(insert_query, (country, state, city, source, date, label, value, analysis))
 
     # Commit e fechamento da conexão
     conn.commit()

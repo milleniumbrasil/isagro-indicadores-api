@@ -51,6 +51,8 @@ CREATE TABLE public.tb_chart (
 );
 CREATE UNIQUE INDEX tb_chart_external_id_idx ON public.tb_chart USING btree (external_id);
 
+ALTER TABLE public.tb_chart ALTER COLUMN value TYPE float8;
+
 -- Table comment
 
 COMMENT ON TABLE public.tb_chart IS 'Armazena dados relacionados ao projeto IS-AGRO, voltado para a exibição de painéis de informações sobre meio ambiente e agronomia no Brasil. Contém registros sobre diferentes tipos de análises, como erosão, GEE, NH3, NPK, orgânicas, pesticidas e poluição, organizados por localização geográfica e período.';
