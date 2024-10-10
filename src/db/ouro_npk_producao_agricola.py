@@ -1,21 +1,24 @@
-import csv
+import os
 import psycopg2
+import csv
 from datetime import datetime
 
 # Configurações de conexão com o banco de dados
-DB_HOST = "seu_host"
-DB_NAME = "seu_banco"
-DB_USER = "seu_usuario"
-DB_PASSWORD = "sua_senha"
+DB_HOST = os.getenv('DATABASE_HOST', 'localhost')
+DB_PORT = os.getenv('DATABASE_PORT', '5432')
+DB_NAME = os.getenv('DATABASE_NAME', 'postgres')
+DB_USER = os.getenv('DATABASE_USER', 'postgres')
+DB_PASSWORD = os.getenv('DATABASE_PASSWORD', 'postgres')
 
 # Caminho do arquivo CSV
-CSV_FILE = "ouro_npk_producao_agricola.csv"
+CSV_FILE = "src/db/ouro_npk_producao_agricola.csv"
 
 # Função para inserir dados na tabela
 def insert_data_to_db():
     # Conexão com o banco de dados
     conn = psycopg2.connect(
         host=DB_HOST,
+        port=DB_PORT,
         dbname=DB_NAME,
         user=DB_USER,
         password=DB_PASSWORD
