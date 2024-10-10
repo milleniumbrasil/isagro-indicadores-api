@@ -13,8 +13,8 @@ DB_PASSWORD = os.getenv('DATABASE_PASSWORD', 'postgres')
 # Caminho do arquivo CSV
 CSV_FILE = "src/db/ouro_npk_producao_agricola.csv"
 
-# Função para inserir dados na tabela
-def insert_data_to_db():
+# Função para inserir ou atualizar dados na tabela
+def upsert_data_to_db():
     # Conexão com o banco de dados
     conn = psycopg2.connect(
         host=DB_HOST,
@@ -38,27 +38,43 @@ def insert_data_to_db():
             source = "Fonte desconhecida"
             analysis = "NPK"
 
-            # Inserção dos dados
-            insert_query = """
-            INSERT INTO public.tb_chart (country, state, city, source, period, label, value, analysis)
-            VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+            # Verificar se o registro já existe
+            check_query = """
+            SELECT 1 FROM public.tb_chart WHERE state = %s AND period = %s AND label = %s
             """
-            cursor.execute(insert_query, (country, state, city, source, date, label, int(float(value)), analysis))
+            cursor.execute(check_query, (state, date, label))
+            exists = cursor.fetchone()
+
+            if exists:
+                # Atualizar o registro existente (sem tocar no campo 'deleted_at')
+                update_query = """
+                UPDATE public.tb_chart
+                SET value = %s, analysis = %s, updated_at = CURRENT_TIMESTAMP
+                WHERE state = %s AND period = %s AND label = %s
+                """
+                cursor.execute(update_query, (int(float(value)), analysis, state, date, label))
+            else:
+                # Inserir um novo registro
+                insert_query = """
+                INSERT INTO public.tb_chart (country, state, city, source, period, label, value, analysis)
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+                """
+                cursor.execute(insert_query, (country, state, city, source, date, label, int(float(value)), analysis))
 
     # Commit e fechamento da conexão
     conn.commit()
 
-    # Verifica se os dados foram inseridos
+    # Verifica se os dados foram inseridos ou atualizados
     cursor.execute("SELECT COUNT(*) FROM public.tb_chart")
     count = cursor.fetchone()[0]
     print(f"\nTotal de registros na tabela tb_chart: {count}")
 
-    # Consulta todos os registros para exibir
+    # Consulta alguns registros para exibir
     cursor.execute("SELECT * FROM public.tb_chart LIMIT 10")
     rows = cursor.fetchall()
 
     # Exibe os primeiros 10 resultados
-    print("\nExibindo os primeiros 10 registros inseridos:")
+    print("\nExibindo os primeiros 10 registros:")
     for row in rows:
         print(row)
 
@@ -67,4 +83,4 @@ def insert_data_to_db():
     conn.close()
 
 if __name__ == "__main__":
-    insert_data_to_db()
+    upsert_data_to_db()
