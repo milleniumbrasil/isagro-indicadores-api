@@ -33,6 +33,23 @@ def update_states():
         conn.commit()
         print("Estados atualizados com sucesso.")
 
+        # Verificação dos estados que ainda estão numéricos ou inválidos
+        check_query = """
+            SELECT DISTINCT state
+            FROM tb_chart
+            WHERE state ~ '^[0-9]+$' OR state NOT IN %s
+        """
+        valid_states = tuple(geocode_to_state.values())
+        cursor.execute(check_query, (valid_states,))
+        invalid_states = cursor.fetchall()
+
+        if invalid_states:
+            print("Estados ainda numéricos ou inválidos encontrados:")
+            for state in invalid_states:
+                print(state[0])
+        else:
+            print("Nenhum estado numérico ou inválido encontrado.")
+
     except Exception as e:
         print("Erro ao atualizar os estados:", e)
 
