@@ -45,11 +45,11 @@ def upsert_data_to_db():
                 print(f"Valor inválido encontrado: {value}")
                 continue
 
-            # Verificar se o registro já existe
+            # Verificar se o registro já existe (sem considerar o 'nutrient')
             check_query = """
-            SELECT 1 FROM public.tb_chart WHERE state = %s AND period = %s AND label = %s AND nutrient = %s
+            SELECT 1 FROM public.tb_chart WHERE state = %s AND period = %s AND label = %s
             """
-            cursor.execute(check_query, (state, date, label, nutrient))
+            cursor.execute(check_query, (state, date, label))
             exists = cursor.fetchone()
 
             if exists:
@@ -57,16 +57,16 @@ def upsert_data_to_db():
                 update_query = """
                 UPDATE public.tb_chart
                 SET value = %s, analysis = %s, updated_at = CURRENT_TIMESTAMP
-                WHERE state = %s AND period = %s AND label = %s AND nutrient = %s
+                WHERE state = %s AND period = %s AND label = %s
                 """
-                cursor.execute(update_query, (value, analysis, state, date, label, nutrient))
+                cursor.execute(update_query, (value, analysis, state, date, label))
             else:
                 # Inserir um novo registro
                 insert_query = """
-                INSERT INTO public.tb_chart (country, state, city, source, period, label, nutrient, value, analysis)
-                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
+                INSERT INTO public.tb_chart (country, state, city, source, period, label, value, analysis)
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
                 """
-                cursor.execute(insert_query, (country, state, city, source, date, label, nutrient, value, analysis))
+                cursor.execute(insert_query, (country, state, city, source, date, label, value, analysis))
 
     # Commit e fechamento da conexão
     conn.commit()
