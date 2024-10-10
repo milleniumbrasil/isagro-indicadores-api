@@ -31,6 +31,7 @@ python3 src/db/ouro_npk_fert_sintetico.py
 python3 src/db/ouro_npk_fixbioN.py
 python3 src/db/ouro_npk_producao_agricola.py
 python3 src/db/ouro_npk_sementes.py
+python3 src/db/ouro_amonia_agro.py
 python3 src/db/update_state.py
 
 # Desativa o ambiente virtual
