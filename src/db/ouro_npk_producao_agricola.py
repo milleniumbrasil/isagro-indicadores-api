@@ -74,7 +74,7 @@ def upsert_data_to_db():
     rows = cursor.fetchall()
 
     # Exibe os primeiros 10 resultados
-    print("\nExibindo os primeiros 10 registros:")
+    print("\nExibindo os primeiros 10 registros de Produção Agrícola:")
     for row in rows:
         print(row)
 
