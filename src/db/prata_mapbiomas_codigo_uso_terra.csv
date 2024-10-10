@@ -1,0 +1,38 @@
+codigo,classe_cod,rotulo
+1,1. Floresta,Floresta
+3,1.1 Formação Florestal,Formação Florestal
+4,1.2. Formação Savânica,Formação Savânica
+5,1.3. Mangue,Mangue
+6,1.4. Floresta Alagável,Floresta Alagável
+49,1.5. Restinga Arbórea,Restinga Arbórea
+10,2. Vegetação Herbácea e Arbustiva,Vegetação Herbácea e Arbustiva
+11,2.1. Campo Alagado e Área Pantanosa,Campo Alagado e Área Pantanosa
+12,2.2. Formação Campestre,Formação Campestre
+32,2.3. Apicum,Apicum
+29,2.4. Afloramento Rochoso,Afloramento Rochoso
+50,2.5. Restinga Herbácea,Restinga Herbácea
+14,3. Agropecuária,Agropecuária
+15,3.1. Pastagem,Pastagem
+18,3.2. Agricultura,Agricultura
+19,3.2.1. Lavoura Temporária,Lavoura Temporária
+39,3.2.1.1. Soja,Soja
+20,3.2.1.2. Cana,Cana
+40,3.2.1.3. Arroz,Arroz
+62,3.2.1.4. Algodão (beta),Algodão beta
+41,3.2.1.5. Outras Lavouras Temporárias,Outras Lavouras Temporárias
+36,3.2.2. Lavoura Perene,Lavoura Perene
+46,3.2.2.1. Café,Café
+47,3.2.2.2. Citrus,Citrus
+35,3.2.2.3. Dendê,Dendê
+48,3.2.2.4. Outras Lavouras Perenes,Outras Lavouras Perenes
+9,3.3. Silvicultura,Silvicultura
+21,3.4. Mosaico de Usos,Mosaico de Usos
+22,4. Área não Vegetada,Área não Vegetada
+23,"4.1. Praia, Duna e Areal",Praia Duna e Areal
+24,4.2. Área Urbanizada,Área Urbanizada
+30,4.3. Mineração,Mineração
+25,4.4. Outras Áreas não Vegetadas,Outras Áreas não Vegetadas
+26,5. Corpo D'água,Corpo Dágua
+33,"5.1 Rio, Lago e Oceano",Rio Lago e Oceano
+31,5.2 Aquicultura,Aquicultura
+0,6. Não observado,Não observado
