@@ -51,7 +51,7 @@ if __name__ == "__main__":
     # Parâmetros específicos para o script "ouro_npk_fixbioN"
     process_data(
         'src/db/ouro_npk_fixbioN.csv',  # Caminho do arquivo CSV
-        'Fonte desconhecida',  # Fonte
+        'ISAgro',  # Fonte
         'NPK',  # Indicador/analysis
         'Fixação biológica de N'  # Mensagem de sucesso
     )

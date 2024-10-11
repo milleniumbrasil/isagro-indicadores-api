@@ -51,7 +51,7 @@ if __name__ == "__main__":
     # Parâmetros específicos para o script "ouro_npk_deposicao_atmosferica"
     process_data(
         'src/db/ouro_npk_deposicao_atmosferica.csv',  # Caminho do arquivo CSV
-        'Fonte desconhecida',  # Fonte
+        'ISAgro',  # Fonte
         'NPK',  # Indicador/analysis
         'Deposição Atmosférica'  # Mensagem de sucesso
     )
