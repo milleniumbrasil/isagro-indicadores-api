@@ -1,7 +1,8 @@
-import psycopg2
+from db_utils import get_db_connection
 import csv
 
 def load_geocode_mapping(filename):
+    """Carrega o mapeamento de geocódigos para estados a partir de um arquivo CSV."""
     geocode_to_state = {}
     with open(filename, 'r') as file:
         csv_reader = csv.reader(file)
@@ -15,14 +16,8 @@ def load_geocode_mapping(filename):
 
 def update_states(filename):
     try:
-        # Conexão com o banco de dados
-        conn = psycopg2.connect(
-            host="localhost",  # Ajuste conforme sua configuração
-            port="5432",
-            database="postgres",
-            user="postgres",
-            password="postgres"
-        )
+        # Conexão com o banco de dados usando o utilitário
+        conn = get_db_connection()
         cursor = conn.cursor()
 
         # Carregar o mapeamento dos geocódigos
@@ -36,6 +31,11 @@ def update_states(filename):
                 WHERE state = %s
             """
             cursor.execute(update_query, (state, geocode))
+
+        # Corrige os estados restantes com código 1 e 34, se existirem
+        manual_corrections = {'1': 'DF', '34': 'SP'}
+        for old_code, new_state in manual_corrections.items():
+            cursor.execute("UPDATE tb_chart SET state = %s WHERE state = %s", (new_state, old_code))
 
         # Confirma as mudanças
         conn.commit()
