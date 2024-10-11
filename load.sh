@@ -33,7 +33,8 @@ echo "Executando o script Python..."
 # python3 src/db/ouro_amonia_agro.py
 # python3 src/db/ouro_area_agricola_OCDE.py
 # python3 src/db/ouro_gee_agropecuaria.py
-python3 src/db/ouro_gee_OCDE.py
+# python3 src/db/ouro_gee_OCDE.py
+python3 src/db/prata_mapbiomas_codigo_uso_terra.py
 python3 src/db/update_state.py
 python3 src/db/update_countries.py
 
