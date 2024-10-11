@@ -21,7 +21,7 @@ export class ChartService {
 		return ['OCDE', 'IAC', 'UNB'];
 	}
 
-	public getAvailableAnalyses(): string[] {
+	public getAvailableanalysis(): string[] {
 		return ['erosão', 'GEE', 'NH3', 'NPK', 'orgânicas', 'pesticidas', 'poluição'];
 	}
 
@@ -74,7 +74,7 @@ export class ChartService {
 		}
 	}
 
-	async findDistinctAnalyses(): Promise<string[]> {
+	async findDistinctanalysis(): Promise<string[]> {
 		const queryRunner = this.dataSourceService.getDataSource().createQueryRunner();
 
 		const query = `
@@ -105,7 +105,7 @@ export class ChartService {
 
 		return result.map((item: any) => item.label);
 	}
-	
+
 	async findDistinctLabelsByAnalysis(analysis: string): Promise<string[]> {
 		const queryRunner = this.dataSourceService.getDataSource().createQueryRunner();
 

@@ -12,9 +12,9 @@ export class MenuController {
 		description: 'Este endpoint retorna uma lista de tipos de análises disponíveis.',
 	})
 	@ApiResponse({ status: 200, description: 'Lista de análises disponíveis', type: [String] })
-	@Get('/analyses')
-	async getAvailableAnalyses(): Promise<string[]> {
-		return this.chartService.findDistinctAnalyses();
+	@Get('/analysis')
+	async getAvailableanalysis(): Promise<string[]> {
+		return this.chartService.findDistinctanalysis();
 	}
 
 	@ApiOperation({
