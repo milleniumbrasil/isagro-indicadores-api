@@ -10,12 +10,6 @@ RUN addgroup -S isagrogroup && adduser -S isagrouser -G isagrogroup
 # Instala dependências para o node-gyp, Python e ferramentas de build
 RUN apk add --no-cache python3 py3-pip make g++ && ln -sf python3 /usr/bin/python
 
-# Copia o requirements.txt para o diretório de trabalho
-COPY ../requirements.txt ./
-
-# Instala as dependências Python
-RUN pip install --no-cache-dir -r requirements.txt
-
 # Copia o package.json e package-lock.json para o diretório de trabalho
 COPY ../package*.json ./
 
