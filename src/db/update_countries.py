@@ -33,10 +33,10 @@ def update_country_codes():
         conn = get_db_connection()
         cursor = conn.cursor()
 
-        # Consulta para selecionar registros com nomes de países
+        # Consulta para selecionar registros com nomes de países ou valores numéricos
         select_query = """
         SELECT id, country FROM tb_chart
-        WHERE LENGTH(country) > 2
+        WHERE LENGTH(country) > 2 OR country ~ '^[0-9]+$'
         """
         cursor.execute(select_query)
         rows = cursor.fetchall()
@@ -46,14 +46,19 @@ def update_country_codes():
         for row in rows:
             record_id, country_name = row
 
-            # Tenta obter o código ISO 3166-1 alfa-2 para o país
-            country_code = country_name_to_iso.get(country_name.strip())
-            if not country_code:
-                try:
-                    country_code = countries.get(country_name.strip()).alpha2
-                except KeyError:
-                    print(f"País não encontrado: {country_name.strip()}")
-                    continue
+            # Verifica se o valor de `country` é um número
+            if country_name.isdigit():
+                # Supondo que o número "1" representa o Brasil
+                country_code = "BR"
+            else:
+                # Tenta obter o código ISO 3166-1 alfa-2 para o país
+                country_code = country_name_to_iso.get(country_name.strip())
+                if not country_code:
+                    try:
+                        country_code = countries.get(country_name.strip()).alpha2
+                    except KeyError:
+                        print(f"País não encontrado: {country_name.strip()}")
+                        continue
 
             # Atualiza o registro no banco de dados
             update_query = """
