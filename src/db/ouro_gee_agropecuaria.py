@@ -1,7 +1,7 @@
 from datetime import datetime
-from db_utils import get_db_connection, read_csv_file, check_record_exists, insert_record, print_test_results
+from db_utils import get_db_connection, read_csv_file, insert_record, print_test_results
 
-def process_data(file_path):
+def process_data(file_path, src, indicador, success_msg):
     try:
         # Conectando ao banco de dados
         conn = get_db_connection()
@@ -17,19 +17,17 @@ def process_data(file_path):
             date = datetime.strptime(row[2], '%Y-%m-%d').date()
             label = row[3]
             value = float(row[4])
-            source = 'ISAgro'
-            analysis = 'GEE'
+            source = src
+            analysis = indicador
 
-            # Verifica se o registro já existe
-            if not check_record_exists(cursor, country, state, date, label, analysis):
-                # Insere um novo registro
-                insert_record(cursor, country, state, '', source, date, label, value, analysis)
+            # Insere um novo registro
+            insert_record(cursor, country, state, '', source, date, label, value, analysis)
 
         # Confirmando a transação
         conn.commit()
 
         # Verificando os registros inseridos
-        print_test_results(cursor, 'Emissão de CO2e')
+        print_test_results(cursor, success_msg)
 
         # Mensagem indicando o carregamento completo
         print(f"\nArquivo CSV '{file_path}' carregado com sucesso.")
@@ -44,5 +42,10 @@ def process_data(file_path):
             conn.close()
 
 if __name__ == "__main__":
-    # Passa o caminho do arquivo CSV para processamento
-    process_data('src/db/ouro_gee_agropecuaria.csv')
+    # Parâmetros específicos para o script "ouro_gee_agropecuaria"
+    process_data(
+        'src/db/ouro_gee_agropecuaria.csv',  # Caminho do arquivo CSV
+        'ISAgro',  # Fonte
+        'GEE',  # Indicador/analysis
+        'Emissão de CO2e'  # Mensagem de sucesso
+    )

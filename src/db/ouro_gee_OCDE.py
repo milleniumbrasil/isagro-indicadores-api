@@ -1,82 +1,38 @@
-import csv
-import psycopg2
 from datetime import datetime
-import os
-import uuid
+from db_utils import get_db_connection, read_csv_file, insert_record, print_test_results
 
-# Configurações de conexão com o banco de dados
-DB_HOST = os.getenv('DATABASE_HOST', 'localhost')
-DB_PORT = os.getenv('DATABASE_PORT', '5432')
-DB_NAME = os.getenv('DATABASE_NAME', 'postgres')
-DB_USER = os.getenv('DATABASE_USER', 'postgres')
-DB_PASSWORD = os.getenv('DATABASE_PASSWORD', 'postgres')
-
-# Mapeamento manual para os códigos de país ISO 3166-1 alfa-2
-country_code_mapping = {
-    "1": "BR",  # Supondo que 1 representa o Brasil no arquivo CSV
-    # Adicione outros mapeamentos se necessário
-}
-
-def insert_data_to_db():
+def process_data(file_path, src, indicador, success_msg):
     try:
         # Conectando ao banco de dados
-        conn = psycopg2.connect(
-            host=DB_HOST,
-            port=DB_PORT,
-            database=DB_NAME,
-            user=DB_USER,
-            password=DB_PASSWORD
-        )
+        conn = get_db_connection()
         cursor = conn.cursor()
 
-        # Abrindo o arquivo CSV
-        with open('src/db/ouro_gee_OCDE.csv', 'r') as file:
-            csv_reader = csv.reader(file)
-            next(csv_reader)  # Pula o cabeçalho
+        # Lendo o arquivo CSV
+        data = read_csv_file(file_path)
 
-            for row in csv_reader:
-                # Extraindo os dados do CSV
-                country_id = row[0]
-                country = country_code_mapping.get(country_id, 'Unknown')
-                state = row[1]
-                date = datetime.strptime(row[2], '%Y-%m-%d').date()
-                label = row[3]
-                value = float(row[4])
-                source = 'Fonte desconhecida'
-                analysis = 'GEE'
+        for row in data:
+            # Extraindo os dados do CSV
+            country = row[0]  # Usa o código diretamente do CSV
+            date = datetime.strptime(row[1], '%Y-%m-%d').date()
+            label = row[2]
+            value = float(row[3])
+            source = src
+            analysis = indicador
 
-                # Verifica manualmente se o registro já existe
-                check_query = """
-                SELECT 1 FROM tb_chart
-                WHERE country = %s AND state = %s AND period = %s AND label = %s AND analysis = %s
-                """
-                cursor.execute(check_query, (country, state, date, label, analysis))
-                exists = cursor.fetchone() is not None
-
-                if not exists:
-                    # Insere um novo registro
-                    insert_query = """
-                    INSERT INTO tb_chart (country, state, city, source, period, label, value, created_at, updated_at, analysis)
-                    VALUES (%s, %s, %s, %s, %s, %s, %s, NOW(), NOW(), %s)
-                    """
-                    cursor.execute(insert_query, (country, state, '', source, date, label, value, analysis))
+            # Insere um novo registro
+            insert_record(cursor, country, '', '', source, date, label, value, analysis)
 
         # Confirmando a transação
         conn.commit()
 
-        # Verifica a quantidade de registros na tabela e exibe alguns exemplos
-        cursor.execute("SELECT COUNT(*) FROM tb_chart")
-        total_records = cursor.fetchone()[0]
-        print(f"\nTotal de registros na tabela tb_chart: {total_records}")
+        # Verificando os registros inseridos
+        print_test_results(cursor, success_msg)
 
-        cursor.execute("SELECT * FROM tb_chart WHERE label = 'Emissão de CO2e' LIMIT 10")
-        records = cursor.fetchall()
-        print("\nExibindo os primeiros 10 registros de 'Emissão de CO2e':")
-        for record in records:
-            print(record)
+        # Mensagem indicando o carregamento completo
+        print(f"\nArquivo CSV '{file_path}' carregado com sucesso.")
 
     except Exception as error:
-        print(f"Erro ao inserir os dados: {error}")
+        print(f"Erro durante o processamento dos dados: {error}")
     finally:
         # Fecha o cursor e a conexão
         if cursor:
@@ -85,4 +41,10 @@ def insert_data_to_db():
             conn.close()
 
 if __name__ == "__main__":
-    insert_data_to_db()
+    # Parâmetros específicos para o script "ouro_gee_OCDE"
+    process_data(
+        'src/db/ouro_gee_OCDE.csv',  # Caminho do arquivo CSV
+        'OCDE',  # Fonte
+        'GEE',  # Indicador/analysis
+        'Emissão de CO2e'  # Mensagem de sucesso
+    )

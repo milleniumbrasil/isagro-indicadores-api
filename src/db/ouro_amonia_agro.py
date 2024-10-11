@@ -42,5 +42,10 @@ def process_data(file_path, src, indicador, success_msg):
             conn.close()
 
 if __name__ == "__main__":
-    # Passa o caminho do arquivo CSV para processamento
-    process_data('src/db/ouro_amonia_agro.csv', 'ISAgro', 'NH3', 'Adubos orgânicos')
+    # Parâmetros de exemplo para este script específico
+    process_data(
+        'src/db/ouro_amonia_agro.csv',  # Caminho do arquivo CSV
+        'ISAgro',  # Fonte
+        'NH3',  # Indicador/analysis
+        'Adubos orgânicos'  # Mensagem de sucesso
+    )
