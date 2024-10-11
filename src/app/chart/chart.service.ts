@@ -253,7 +253,7 @@ export class ChartService {
 						Report.end_period_group,
 						Report.total_value,
 						Report.total_count,
-						ROUND((Report.total_value / NULLIF(TotalSum.total_value_all_periods, 0)) * 100, 2) AS percentual_total
+    					ROUND(CAST((Report.total_value / NULLIF(TotalSum.total_value_all_periods, 0)) AS NUMERIC), 2) AS percentual_total
 					FROM (
 						SELECT
 							EXTRACT(YEAR FROM tb_chart.period) AS start_period_group,
