@@ -67,7 +67,7 @@ def print_test_results(cursor, label):
         total_records = cursor.fetchone()[0]
         print(f"\nTotal de registros na tabela tb_chart: {total_records}")
 
-        cursor.execute("SELECT * FROM tb_chart WHERE label = %s LIMIT 10", (label,))
+        cursor.execute("SELECT * FROM tb_chart WHERE label = %s LIMIT 3", (label,))
         records = cursor.fetchall()
         print(f"\nExibindo os primeiros 10 registros de '{label}':")
         for record in records:

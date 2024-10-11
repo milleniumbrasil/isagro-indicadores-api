@@ -1,30 +1,23 @@
 from datetime import datetime
 from db_utils import get_db_connection, read_csv_file, check_record_exists, insert_record, print_test_results
 
-# Mapeamento manual para os códigos de país ISO 3166-1 alfa-2
-country_code_mapping = {
-    "1": "BR",  # Supondo que 1 representa o Brasil no arquivo CSV
-    # Adicione outros mapeamentos se necessário
-}
-
-def process_data():
+def process_data(file_path):
     try:
         # Conectando ao banco de dados
         conn = get_db_connection()
         cursor = conn.cursor()
 
         # Lendo o arquivo CSV
-        data = read_csv_file('src/db/ouro_gee_agropecuaria.csv')
+        data = read_csv_file(file_path)
 
         for row in data:
             # Extraindo os dados do CSV
-            country_id = row[0]
-            country = country_code_mapping.get(country_id, 'Unknown')
+            country = row[0]  # Usa o código diretamente do CSV
             state = row[1]
             date = datetime.strptime(row[2], '%Y-%m-%d').date()
             label = row[3]
             value = float(row[4])
-            source = 'Fonte desconhecida'
+            source = 'ISAgro'
             analysis = 'GEE'
 
             # Verifica se o registro já existe
@@ -38,6 +31,9 @@ def process_data():
         # Verificando os registros inseridos
         print_test_results(cursor, 'Emissão de CO2e')
 
+        # Mensagem indicando o carregamento completo
+        print(f"\nArquivo CSV '{file_path}' carregado com sucesso.")
+
     except Exception as error:
         print(f"Erro durante o processamento dos dados: {error}")
     finally:
@@ -48,4 +44,5 @@ def process_data():
             conn.close()
 
 if __name__ == "__main__":
-    process_data()
+    # Passa o caminho do arquivo CSV para processamento
+    process_data('src/db/ouro_gee_agropecuaria.csv')
