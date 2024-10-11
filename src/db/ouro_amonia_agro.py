@@ -43,4 +43,4 @@ def process_data(file_path, src, indicador, success_msg):
 
 if __name__ == "__main__":
     # Passa o caminho do arquivo CSV para processamento
-    process_data('src/db/ouro_amonia_agro.csv', 'ISAgro', 'NH3', 'Adubos organicos')
+    process_data('src/db/ouro_amonia_agro.csv', 'ISAgro', 'NH3', 'Adubos orgânicos')
