@@ -1,7 +1,7 @@
 from datetime import datetime
 from db_utils import get_db_connection, read_csv_file, insert_record, print_test_results
 
-def process_data(file_path, src, indicador):
+def process_data(file_path, src, indicador, success_msg):
     try:
         # Conectando ao banco de dados
         conn = get_db_connection()
@@ -27,7 +27,7 @@ def process_data(file_path, src, indicador):
         conn.commit()
 
         # Verificando os registros inseridos
-        print_test_results(cursor, 'Adubos organicos')
+        print_test_results(cursor, success_msg)
 
         # Mensagem indicando o carregamento completo
         print(f"\nArquivo CSV '{file_path}' carregado com sucesso.")
@@ -43,4 +43,4 @@ def process_data(file_path, src, indicador):
 
 if __name__ == "__main__":
     # Passa o caminho do arquivo CSV para processamento
-    process_data('src/db/ouro_amonia_agro.csv', 'ISAgro', 'NH3')
+    process_data('src/db/ouro_amonia_agro.csv', 'ISAgro', 'NH3', 'Adubos organicos')
