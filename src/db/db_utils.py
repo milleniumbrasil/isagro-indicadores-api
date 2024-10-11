@@ -35,19 +35,6 @@ def read_csv_file(file_path):
         print(f"Erro ao ler o arquivo CSV: {e}")
         raise
 
-def check_record_exists(cursor, country, state, period, label, analysis):
-    """Verifica se um registro já existe no banco de dados."""
-    try:
-        query = """
-        SELECT 1 FROM tb_chart
-        WHERE country = %s AND state = %s AND period = %s AND label = %s AND analysis = %s
-        """
-        cursor.execute(query, (country, state, period, label, analysis))
-        return cursor.fetchone() is not None
-    except Exception as e:
-        print(f"Erro ao verificar a existência do registro: {e}")
-        raise
-
 def insert_record(cursor, country, state, city, source, period, label, value, analysis):
     """Insere um novo registro na tabela tb_chart."""
     try:
