@@ -56,7 +56,7 @@ def print_test_results(cursor, label):
 
         cursor.execute("SELECT * FROM tb_chart WHERE label = %s LIMIT 3", (label,))
         records = cursor.fetchall()
-        print(f"\nExibindo os primeiros 10 registros de '{label}':")
+        print(f"\nExibindo os primeiros 3 registros de '{label}':")
         for record in records:
             print(record)
     except Exception as e:

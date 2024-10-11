@@ -1,7 +1,7 @@
 from datetime import datetime
 from db_utils import get_db_connection, read_csv_file, insert_record, print_test_results
 
-def process_data(file_path):
+def process_data(file_path, src, indicador):
     try:
         # Conectando ao banco de dados
         conn = get_db_connection()
@@ -12,14 +12,16 @@ def process_data(file_path):
 
         for row in data:
             # Extraindo os dados do CSV
-            country = 'BR'  # Supondo que seja Brasil
+            country = row[0]  # Usa o código diretamente do CSV
             state = row[1]
             date = datetime.strptime(row[2], '%Y-%m-%d').date()
             label = row[3]
             value = float(row[4])
-            source = 'ISAgro'
-            analysis = 'NH3'
-			insert_record(cursor, country, state, '', source, date, label, value, analysis)
+            source = src
+            analysis = indicador
+
+            # Insere um novo registro
+            insert_record(cursor, country, state, '', source, date, label, value, analysis)
 
         # Confirmando a transação
         conn.commit()
@@ -41,4 +43,4 @@ def process_data(file_path):
 
 if __name__ == "__main__":
     # Passa o caminho do arquivo CSV para processamento
-    process_data('src/db/ouro_amonia_agro.csv')
+    process_data('src/db/ouro_amonia_agro.csv', 'ISAgro', 'NH3')
