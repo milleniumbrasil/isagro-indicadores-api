@@ -29,7 +29,7 @@ python3 src/db/ouro_gee_OCDE.py
 python3 src/db/ouro_npk_carcaca_bovina.py
 python3 src/db/ouro_npk_dejetos.py
 python3 src/db/ouro_npk_deposicao_atmosferica.py
-# python3 src/db/ouro_npk_fert_organico_vinhaca.py
+python3 src/db/ouro_npk_fert_organico_vinhaca.py
 # python3 src/db/ouro_npk_fert_sintetico.py
 # python3 src/db/ouro_npk_fixbioN.py
 # python3 src/db/ouro_npk_producao_agricola.py
