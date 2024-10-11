@@ -74,6 +74,102 @@ export class ChartService {
 		}
 	}
 
+	async findDistinctAnalyses(): Promise<string[]> {
+		const queryRunner = this.dataSourceService.getDataSource().createQueryRunner();
+
+		const query = `
+			SELECT DISTINCT analysis
+			FROM tb_chart
+			WHERE analysis IS NOT NULL
+			ORDER BY analysis ASC;
+		`;
+
+		const result = await queryRunner.query(query);
+		await queryRunner.release();
+
+		return result.map((item: any) => item.analysis);
+	}
+
+	async findDistinctLabels(): Promise<string[]> {
+		const queryRunner = this.dataSourceService.getDataSource().createQueryRunner();
+
+		const query = `
+			SELECT DISTINCT label
+			FROM tb_chart
+			WHERE label IS NOT NULL
+			ORDER BY label ASC;
+		`;
+
+		const result = await queryRunner.query(query);
+		await queryRunner.release();
+
+		return result.map((item: any) => item.label);
+	}
+
+	async findDistinctCountries(): Promise<string[]> {
+		const queryRunner = this.dataSourceService.getDataSource().createQueryRunner();
+
+		const query = `
+			SELECT DISTINCT country
+			FROM tb_chart
+			WHERE country IS NOT NULL
+			ORDER BY country ASC;
+		`;
+
+		const result = await queryRunner.query(query);
+		await queryRunner.release();
+
+		return result.map((item: any) => item.country);
+	}
+
+	async findDistinctStates(): Promise<string[]> {
+		const queryRunner = this.dataSourceService.getDataSource().createQueryRunner();
+
+		const query = `
+			SELECT DISTINCT state
+			FROM tb_chart
+			WHERE state IS NOT NULL
+			ORDER BY state ASC;
+		`;
+
+		const result = await queryRunner.query(query);
+		await queryRunner.release();
+
+		return result.map((item: any) => item.state);
+	}
+
+	async findDistinctCities(): Promise<string[]> {
+		const queryRunner = this.dataSourceService.getDataSource().createQueryRunner();
+
+		const query = `
+			SELECT DISTINCT city
+			FROM tb_chart
+			WHERE city IS NOT NULL AND city <> ''
+			ORDER BY city ASC;
+		`;
+
+		const result = await queryRunner.query(query);
+		await queryRunner.release();
+
+		return result.map((item: any) => item.city);
+	}
+
+	async findDistinctSources(): Promise<string[]> {
+		const queryRunner = this.dataSourceService.getDataSource().createQueryRunner();
+
+		const query = `
+			SELECT DISTINCT source
+			FROM tb_chart
+			WHERE source IS NOT NULL
+			ORDER BY source ASC;
+		`;
+
+		const result = await queryRunner.query(query);
+		await queryRunner.release();
+
+		return result.map((item: any) => item.source);
+	}
+
 	private getWhereClause(
         analysis: string,
         label?: string,
