@@ -27,7 +27,7 @@ python3 src/db/ouro_area_agricola_OCDE.py
 python3 src/db/ouro_gee_agropecuaria.py
 python3 src/db/ouro_gee_OCDE.py
 python3 src/db/ouro_npk_carcaca_bovina.py
-# python3 src/db/ouro_npk_dejetos.py
+python3 src/db/ouro_npk_dejetos.py
 # python3 src/db/ouro_npk_deposicao_atmosferica.py
 # python3 src/db/ouro_npk_fert_organico_vinhaca.py
 # python3 src/db/ouro_npk_fert_sintetico.py
