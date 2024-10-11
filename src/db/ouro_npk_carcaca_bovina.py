@@ -1,86 +1,50 @@
-import os
-import csv
-import psycopg2
 from datetime import datetime
+from db_utils import get_db_connection, read_csv_file, insert_record, print_test_results
 
-# Configurações de conexão com o banco de dados
-DB_HOST = os.getenv('DATABASE_HOST', 'localhost')
-DB_PORT = os.getenv('DATABASE_PORT', '5432')
-DB_NAME = os.getenv('DATABASE_NAME', 'postgres')
-DB_USER = os.getenv('DATABASE_USER', 'postgres')
-DB_PASSWORD = os.getenv('DATABASE_PASSWORD', 'postgres')
+def process_data(file_path, src, indicador, success_msg):
+    try:
+        # Conectando ao banco de dados
+        conn = get_db_connection()
+        cursor = conn.cursor()
 
-# Caminho do arquivo CSV
-CSV_FILE = "src/db/ouro_npk_carcaca_bovina.csv"
+        # Lendo o arquivo CSV
+        data = read_csv_file(file_path)
 
-# Função para inserir ou atualizar dados na tabela
-def upsert_data_to_db():
-    # Conexão com o banco de dados
-    conn = psycopg2.connect(
-        host=DB_HOST,
-        port=DB_PORT,
-        dbname=DB_NAME,
-        user=DB_USER,
-        password=DB_PASSWORD
-    )
-    cursor = conn.cursor()
-
-    with open(CSV_FILE, mode='r', encoding='utf-8') as file:
-        csv_reader = csv.reader(file)
-        next(csv_reader)  # Pula o cabeçalho
-
-        for row in csv_reader:
-            state, date, label, nutrient, value = row
-
-            # Dados adicionais necessários
+        for row in data:
+            # Extraindo os dados do CSV
+            state, date_str, label, nutrient, value = row
+            date = datetime.strptime(date_str, '%Y-%m-%d').date()
             country = "BR"
             city = ""
-            source = "Fonte desconhecida"
-            analysis = "NPK"
+            source = src
+            analysis = indicador
 
-            # Verificar se o registro já existe
-            check_query = """
-            SELECT 1 FROM public.tb_chart WHERE state = %s AND period = %s AND label = %s
-            """
-            cursor.execute(check_query, (state, date, label))
-            exists = cursor.fetchone()
+            # Insere um novo registro
+            insert_record(cursor, country, state, city, source, date, label, float(value), analysis)
 
-            if exists:
-                # Atualizar o registro existente
-                update_query = """
-                UPDATE public.tb_chart
-                SET value = %s, analysis = %s, updated_at = CURRENT_TIMESTAMP
-                WHERE state = %s AND period = %s AND label = %s
-                """
-                cursor.execute(update_query, (int(float(value)), analysis, state, date, label))
-            else:
-                # Inserir um novo registro
-                insert_query = """
-                INSERT INTO public.tb_chart (country, state, city, source, period, label, value, analysis)
-                VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
-                """
-                cursor.execute(insert_query, (country, state, city, source, date, label, analysis))
+        # Confirmando a transação
+        conn.commit()
 
-    # Commit e fechamento da conexão
-    conn.commit()
+        # Verificando os registros inseridos
+        print_test_results(cursor, success_msg)
 
-    # Verifica se os dados foram inseridos ou atualizados
-    cursor.execute("SELECT COUNT(*) FROM public.tb_chart")
-    count = cursor.fetchone()[0]
-    print(f"\nTotal de registros na tabela tb_chart: {count}")
+        # Mensagem indicando o carregamento completo
+        print(f"\nArquivo CSV '{file_path}' carregado com sucesso.")
 
-    # Consulta registros específicos para exibir
-    cursor.execute("SELECT * FROM public.tb_chart WHERE label = 'Carcaça Bovina' LIMIT 10")
-    rows = cursor.fetchall()
-
-    # Exibe os primeiros 10 resultados
-    print("\nExibindo os primeiros 10 registros de 'Carcaça Bovina':")
-    for row in rows:
-        print(row)
-
-    # Fecha o cursor e a conexão
-    cursor.close()
-    conn.close()
+    except Exception as error:
+        print(f"Erro durante o processamento dos dados: {error}")
+    finally:
+        # Fecha o cursor e a conexão
+        if cursor:
+            cursor.close()
+        if conn:
+            conn.close()
 
 if __name__ == "__main__":
-    upsert_data_to_db()
+    # Parâmetros específicos para o script "ouro_npk_carcaca_bovina"
+    process_data(
+        'src/db/ouro_npk_carcaca_bovina.csv',  # Caminho do arquivo CSV
+        'ISAgro',  # Fonte
+        'NPK',  # Indicador/analysis
+        'Carcaça Bovina'  # Mensagem de sucesso
+    )
