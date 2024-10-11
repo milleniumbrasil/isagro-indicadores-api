@@ -33,7 +33,7 @@ export class MenuController {
 	})
 	@ApiQuery({
 		name: 'analysis',
-		required: true,
+		required: false,
 		description: 'O tipo de análise para o qual os rótulos devem ser retornados.',
 		example: 'GEE',
 		enum: ["Área Agrícola", "GEE", "NH3", "NPK"],
@@ -41,18 +41,20 @@ export class MenuController {
 	@ApiResponse({ status: 200, description: 'Rótulos válidos para a análise', type: [String] })
 	@ApiResponse({ status: 400, description: 'Análise inválida ou não encontrada' })
 	@Get('/labels')
-	async getValidLabelsByAnalysis(@Query('analysis') analysis: string): Promise<string[]> {
-		if (!analysis) {
-			throw new BadRequestException('Análise obrigatória.');
+	async getLabels(@Query('analysis') analysis?: string): Promise<string[]> {
+		if (analysis) {
+			const labels = await this.chartService.findDistinctLabelsByAnalysis(analysis);
+			if (!labels || labels.length === 0) {
+				throw new BadRequestException('Nenhum rótulo encontrado para a análise especificada.');
+			}
+			return labels;
+		} else {
+			const allLabels = await this.chartService.findDistinctLabels();
+			if (!allLabels || allLabels.length === 0) {
+				throw new BadRequestException('Nenhum rótulo encontrado.');
+			}
+			return allLabels;
 		}
-
-		const labels = await this.chartService.findDistinctLabelsByAnalysis(analysis);
-
-		if (!labels || labels.length === 0) {
-			throw new BadRequestException('Análise inválida ou não encontrada.');
-		}
-
-		return labels;
 	}
 
 	@ApiOperation({
