@@ -1,21 +1,12 @@
-import csv
-import psycopg2
 from datetime import datetime
-import os
-import uuid
-
-# Configurações de conexão com o banco de dados
-DB_HOST = os.getenv('DATABASE_HOST', 'localhost')
-DB_PORT = os.getenv('DATABASE_PORT', '5432')
-DB_NAME = os.getenv('DATABASE_NAME', 'postgres')
-DB_USER = os.getenv('DATABASE_USER', 'postgres')
-DB_PASSWORD = os.getenv('DATABASE_PASSWORD', 'postgres')
+from db_utils import get_db_connection, read_csv_file, upsert_data, verify_data, print_test_results
 
 # Mapeamento manual para os códigos de país ISO 3166-1 alfa-2
 country_code_mapping = {
     "1": "BR",  # Supondo que 1 representa o Brasil no arquivo CSV
     # Adicione outros mapeamentos se necessário
 }
+
 
 def upsert_data_to_db():
     try:
@@ -64,10 +55,10 @@ def upsert_data_to_db():
                 else:
                     # Insere um novo registro
                     insert_query = """
-                    INSERT INTO tb_chart (country, state, city, source, period, label, value, created_at, updated_at, external_id, analysis)
-                    VALUES (%s, %s, %s, %s, %s, %s, %s, NOW(), NOW(), %s, %s)
+                    INSERT INTO tb_chart (country, state, city, source, period, label, value, created_at, updated_at, analysis)
+                    VALUES (%s, %s, %s, %s, %s, %s, %s, NOW(), NOW(), %s)
                     """
-                    cursor.execute(insert_query, (country, state, '', source, date, label, value, str(uuid.uuid4()), analysis))
+                    cursor.execute(insert_query, (country, state, '', source, date, label, value, analysis))
 
         # Confirmando a transação
         conn.commit()

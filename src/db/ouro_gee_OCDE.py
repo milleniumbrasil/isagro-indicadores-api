@@ -30,7 +30,7 @@ def insert_data_to_db():
         cursor = conn.cursor()
 
         # Abrindo o arquivo CSV
-        with open('src/db/ouro_gee_agropecuaria.csv', 'r') as file:
+        with open('src/db/ouro_gee_OCDE.csv', 'r') as file:
             csv_reader = csv.reader(file)
             next(csv_reader)  # Pula o cabeçalho
 
@@ -53,15 +53,13 @@ def insert_data_to_db():
                 cursor.execute(check_query, (country, state, date, label, analysis))
                 exists = cursor.fetchone() is not None
 
-                if exists:
-                    print(f"Registro já existe para {country}, {state}, {date}, {label}, {analysis}.")
-                else:
+                if not exists:
                     # Insere um novo registro
                     insert_query = """
-                    INSERT INTO tb_chart (country, state, city, source, period, label, value, created_at, updated_at, external_id, analysis)
-                    VALUES (%s, %s, %s, %s, %s, %s, %s, NOW(), NOW(), %s, %s)
+                    INSERT INTO tb_chart (country, state, city, source, period, label, value, created_at, updated_at, analysis)
+                    VALUES (%s, %s, %s, %s, %s, %s, %s, NOW(), NOW(), %s)
                     """
-                    cursor.execute(insert_query, (country, state, '', source, date, label, value, str(uuid.uuid4()), analysis))
+                    cursor.execute(insert_query, (country, state, '', source, date, label, value, analysis))
 
         # Confirmando a transação
         conn.commit()

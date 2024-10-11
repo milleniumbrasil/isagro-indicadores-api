@@ -47,10 +47,6 @@ created_at: Date;
 @ApiProperty({ description: "Data de atualização do registro.", nullable: true })
 updated_at: Date;
 
-@PrimaryColumn({ type: 'uuid', default: "uuid_generate_v4()" })
-@ApiProperty({ description: "Identificador único externo de registros desta tabela. Este campo é obrigatório.",  })
-external_id: string;
-
 @Column({ type: 'varchar', length: 4000 })
 @ApiProperty({ description: "Tipo de análise referente ao registro, como erosão, GEE, NH3, NPK, orgânicas, pesticidas ou poluição.",  })
 analysis: string;
@@ -58,6 +54,6 @@ analysis: string;
 
 
     toString() {
-      return `${this.external_id} - ${this.country}`;
+      return `${this.country}`;
     }
   }

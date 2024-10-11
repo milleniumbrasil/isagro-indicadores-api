@@ -59,7 +59,7 @@ def upsert_data_to_db():
                 INSERT INTO public.tb_chart (country, state, city, source, period, label, value, analysis)
                 VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
                 """
-                cursor.execute(insert_query, (country, state, city, source, date, label, int(float(value)), analysis))
+                cursor.execute(insert_query, (country, state, city, source, date, label, analysis))
 
     # Commit e fechamento da conexão
     conn.commit()

@@ -56,10 +56,10 @@ def upsert_data_to_db():
                 else:
                     # Insere um novo registro
                     insert_query = """
-                    INSERT INTO tb_chart (country, state, city, source, period, label, value, created_at, updated_at, external_id, analysis)
-                    VALUES (%s, %s, %s, %s, %s, %s, %s, NOW(), NOW(), %s, %s)
+                    INSERT INTO tb_chart (country, state, city, source, period, label, value, created_at, updated_at, analysis)
+                    VALUES (%s, %s, %s, %s, %s, %s, %s, NOW(), NOW(), %s)
                     """
-                    cursor.execute(insert_query, (country, state, '', source, date, label, value, str(uuid.uuid4()), analysis))
+                    cursor.execute(insert_query, (country, state, '', source, date, label, value, analysis))
 
         # Confirma as alterações
         conn.commit()

@@ -1,14 +1,19 @@
 import psycopg2
+import csv
 
-# Mapeamento dos geocódigos para as siglas dos estados brasileiros
-geocode_to_state = {
-    '11': 'RO', '12': 'AC', '13': 'AM', '14': 'RR', '15': 'PA', '16': 'AP', '17': 'TO',
-    '21': 'MA', '22': 'PI', '23': 'CE', '24': 'RN', '25': 'PB', '26': 'PE', '27': 'AL',
-    '28': 'SE', '29': 'BA', '31': 'MG', '32': 'ES', '33': 'RJ', '35': 'SP', '41': 'PR',
-    '42': 'SC', '43': 'RS', '50': 'MS', '51': 'MT', '52': 'GO', '53': 'DF'
-}
+def load_geocode_mapping(filename):
+    geocode_to_state = {}
+    with open(filename, 'r') as file:
+        csv_reader = csv.reader(file)
+        next(csv_reader)  # Pular o cabeçalho
 
-def update_states():
+        for row in csv_reader:
+            geocode = row[0].strip()
+            state = row[1].strip()
+            geocode_to_state[geocode] = state
+    return geocode_to_state
+
+def update_states(filename):
     try:
         # Conexão com o banco de dados
         conn = psycopg2.connect(
@@ -19,6 +24,9 @@ def update_states():
             password="postgres"
         )
         cursor = conn.cursor()
+
+        # Carregar o mapeamento dos geocódigos
+        geocode_to_state = load_geocode_mapping(filename)
 
         # Atualiza os estados na tabela tb_chart
         for geocode, state in geocode_to_state.items():
@@ -37,10 +45,9 @@ def update_states():
         check_query = """
             SELECT DISTINCT state
             FROM tb_chart
-            WHERE state ~ '^[0-9]+$' OR state NOT IN %s
+            WHERE state ~ '^[0-9]+$' OR state IS NULL
         """
-        valid_states = tuple(geocode_to_state.values())
-        cursor.execute(check_query, (valid_states,))
+        cursor.execute(check_query)
         invalid_states = cursor.fetchall()
 
         if invalid_states:
@@ -60,4 +67,4 @@ def update_states():
             conn.close()
 
 if __name__ == "__main__":
-    update_states()
+    update_states('src/db/ouro_ibge_geocodigo.csv')

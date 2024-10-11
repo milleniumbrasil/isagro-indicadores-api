@@ -41,7 +41,6 @@ def upsert_data_to_db():
                 city = ''
                 source = 'Fonte OCDE'
                 analysis = 'Área Agrícola'
-                external_id = str(uuid.uuid4())
 
                 # Verificando se o registro já existe
                 check_query = """
@@ -62,10 +61,10 @@ def upsert_data_to_db():
                 else:
                     # Inserindo um novo registro
                     insert_query = """
-                    INSERT INTO tb_chart (country, state, city, source, period, label, value, created_at, updated_at, external_id, analysis)
-                    VALUES (%s, %s, %s, %s, %s, %s, %s, NOW(), NOW(), %s, %s)
+                    INSERT INTO tb_chart (country, state, city, source, period, label, value, created_at, updated_at, analysis)
+                    VALUES (%s, %s, %s, %s, %s, %s, %s, NOW(), NOW(), %s)
                     """
-                    cursor.execute(insert_query, (country, state, city, source, date, label, value, external_id, analysis))
+                    cursor.execute(insert_query, (country, state, city, source, date, label, value, analysis))
 
         # Confirmando a transação
         conn.commit()
