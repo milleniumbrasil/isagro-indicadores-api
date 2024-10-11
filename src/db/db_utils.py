@@ -26,29 +26,39 @@ def get_db_connection():
 
 def read_csv_file(file_path):
     """Lê um arquivo CSV e retorna os dados em uma lista de listas."""
-    data = []
     try:
         with open(file_path, 'r') as file:
             csv_reader = csv.reader(file)
-            next(csv_reader)  # Pular o cabeçalho
-            data = [row for row in csv_reader]
-        return data
+            next(csv_reader)  # Pula o cabeçalho
+            return [row for row in csv_reader]
     except Exception as e:
         print(f"Erro ao ler o arquivo CSV: {e}")
         raise
 
-def upsert_data(cursor, query, params):
-    """Executa uma operação de inserção ou atualização."""
+def check_record_exists(cursor, country, state, period, label, analysis):
+    """Verifica se um registro já existe no banco de dados."""
     try:
-        cursor.execute(query, params)
+        query = """
+        SELECT 1 FROM tb_chart
+        WHERE country = %s AND state = %s AND period = %s AND label = %s AND analysis = %s
+        """
+        cursor.execute(query, (country, state, period, label, analysis))
+        return cursor.fetchone() is not None
     except Exception as e:
-        print(f"Erro ao inserir/atualizar dados: {e}")
+        print(f"Erro ao verificar a existência do registro: {e}")
         raise
 
-def verify_data(cursor, query, params):
-    """Verifica se um registro existe no banco de dados."""
-    cursor.execute(query, params)
-    return cursor.fetchone() is not None
+def insert_record(cursor, country, state, city, source, period, label, value, analysis):
+    """Insere um novo registro na tabela tb_chart."""
+    try:
+        query = """
+        INSERT INTO tb_chart (country, state, city, source, period, label, value, created_at, updated_at, analysis)
+        VALUES (%s, %s, %s, %s, %s, %s, %s, NOW(), NOW(), %s)
+        """
+        cursor.execute(query, (country, state, city, source, period, label, value, analysis))
+    except Exception as e:
+        print(f"Erro ao inserir o registro: {e}")
+        raise
 
 def print_test_results(cursor, label):
     """Realiza uma consulta para verificar os registros inseridos e imprime os resultados."""

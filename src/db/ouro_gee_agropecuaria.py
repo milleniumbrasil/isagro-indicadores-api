@@ -1,5 +1,5 @@
 from datetime import datetime
-from db_utils import get_db_connection, read_csv_file, upsert_data, verify_data, print_test_results
+from db_utils import get_db_connection, read_csv_file, check_record_exists, insert_record, print_test_results
 
 # Mapeamento manual para os códigos de país ISO 3166-1 alfa-2
 country_code_mapping = {
@@ -7,75 +7,39 @@ country_code_mapping = {
     # Adicione outros mapeamentos se necessário
 }
 
-
-def upsert_data_to_db():
+def process_data():
     try:
         # Conectando ao banco de dados
-        conn = psycopg2.connect(
-            host=DB_HOST,
-            port=DB_PORT,
-            database=DB_NAME,
-            user=DB_USER,
-            password=DB_PASSWORD
-        )
+        conn = get_db_connection()
         cursor = conn.cursor()
 
-        # Abrindo o arquivo CSV
-        with open('src/db/ouro_gee_agropecuaria.csv', 'r') as file:
-            csv_reader = csv.reader(file)
-            next(csv_reader)  # Pula o cabeçalho
+        # Lendo o arquivo CSV
+        data = read_csv_file('src/db/ouro_gee_agropecuaria.csv')
 
-            for row in csv_reader:
-                # Extraindo os dados do CSV
-                country_id = row[0]
-                country = country_code_mapping.get(country_id, 'Unknown')
-                state = row[1]
-                date = datetime.strptime(row[2], '%Y-%m-%d').date()
-                label = row[3]
-                value = float(row[4])
-                source = 'Fonte desconhecida'
-                analysis = 'GEE'
+        for row in data:
+            # Extraindo os dados do CSV
+            country_id = row[0]
+            country = country_code_mapping.get(country_id, 'Unknown')
+            state = row[1]
+            date = datetime.strptime(row[2], '%Y-%m-%d').date()
+            label = row[3]
+            value = float(row[4])
+            source = 'Fonte desconhecida'
+            analysis = 'GEE'
 
-                # Verifica se o registro já existe
-                check_query = """
-                SELECT id FROM tb_chart
-                WHERE country = %s AND state = %s AND period = %s AND label = %s AND analysis = %s
-                """
-                cursor.execute(check_query, (country, state, date, label, analysis))
-                result = cursor.fetchone()
-
-                if result:
-                    # Atualiza o registro existente
-                    update_query = """
-                    UPDATE tb_chart
-                    SET value = %s, updated_at = NOW()
-                    WHERE id = %s
-                    """
-                    cursor.execute(update_query, (value, result[0]))
-                else:
-                    # Insere um novo registro
-                    insert_query = """
-                    INSERT INTO tb_chart (country, state, city, source, period, label, value, created_at, updated_at, analysis)
-                    VALUES (%s, %s, %s, %s, %s, %s, %s, NOW(), NOW(), %s)
-                    """
-                    cursor.execute(insert_query, (country, state, '', source, date, label, value, analysis))
+            # Verifica se o registro já existe
+            if not check_record_exists(cursor, country, state, date, label, analysis):
+                # Insere um novo registro
+                insert_record(cursor, country, state, '', source, date, label, value, analysis)
 
         # Confirmando a transação
         conn.commit()
 
-        # Verifica a quantidade de registros na tabela e exibe alguns exemplos
-        cursor.execute("SELECT COUNT(*) FROM tb_chart")
-        total_records = cursor.fetchone()[0]
-        print(f"\nTotal de registros na tabela tb_chart: {total_records}")
-
-        cursor.execute("SELECT * FROM tb_chart WHERE label = 'Emissão de CO2e' LIMIT 10")
-        records = cursor.fetchall()
-        print("\nExibindo os primeiros 10 registros de 'Emissão de CO2e':")
-        for record in records:
-            print(record)
+        # Verificando os registros inseridos
+        print_test_results(cursor, 'Emissão de CO2e')
 
     except Exception as error:
-        print(f"Erro ao inserir/atualizar os dados: {error}")
+        print(f"Erro durante o processamento dos dados: {error}")
     finally:
         # Fecha o cursor e a conexão
         if cursor:
@@ -84,4 +48,4 @@ def upsert_data_to_db():
             conn.close()
 
 if __name__ == "__main__":
-    upsert_data_to_db()
+    process_data()
