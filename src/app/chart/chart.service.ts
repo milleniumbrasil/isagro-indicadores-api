@@ -105,6 +105,22 @@ export class ChartService {
 
 		return result.map((item: any) => item.label);
 	}
+	
+	async findDistinctLabelsByAnalysis(analysis: string): Promise<string[]> {
+		const queryRunner = this.dataSourceService.getDataSource().createQueryRunner();
+
+		const query = `
+			SELECT DISTINCT label
+			FROM tb_chart
+			WHERE analysis = $1
+			ORDER BY label ASC;
+		`;
+
+		const result = await queryRunner.query(query, [analysis]);
+		await queryRunner.release();
+
+		return result.map((row: any) => row.label);
+	}
 
 	async findDistinctCountries(): Promise<string[]> {
 		const queryRunner = this.dataSourceService.getDataSource().createQueryRunner();

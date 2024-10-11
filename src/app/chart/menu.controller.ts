@@ -35,8 +35,8 @@ export class MenuController {
 		name: 'analysis',
 		required: true,
 		description: 'O tipo de análise para o qual os rótulos devem ser retornados.',
-		example: 'erosão',
-		enum: ['erosão', 'GEE', 'NH3', 'NPK', 'orgânicas', 'pesticidas', 'poluição'],
+		example: 'GEE',
+		enum: ["Área Agrícola", "GEE", "NH3", "NPK"],
 	})
 	@ApiResponse({ status: 200, description: 'Rótulos válidos para a análise', type: [String] })
 	@ApiResponse({ status: 400, description: 'Análise inválida ou não encontrada' })
@@ -45,10 +45,13 @@ export class MenuController {
 		if (!analysis) {
 			throw new BadRequestException('Análise obrigatória.');
 		}
-		const labels = await this.chartService.findDistinctLabels();
-		if (!labels) {
+
+		const labels = await this.chartService.findDistinctLabelsByAnalysis(analysis);
+
+		if (!labels || labels.length === 0) {
 			throw new BadRequestException('Análise inválida ou não encontrada.');
 		}
+
 		return labels;
 	}
 
