@@ -54,4 +54,5 @@ import { ApiProperty } from '@nestjs/swagger';
 	@Column({ type: 'varchar', length: 7, default: 'entrada' })
 	@ApiProperty({ description: "Tipo de transação, pode ser 'entrada' ou 'saída'." })
 	nutrient_flow: string;
+
 }
