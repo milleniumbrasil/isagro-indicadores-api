@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 from datetime import datetime
 from db_utils import get_db_connection, insert_record, print_test_results
 import random
