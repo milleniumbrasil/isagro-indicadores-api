@@ -20,6 +20,9 @@ source venv/bin/activate
 echo "Instalando dependências..."
 pip install -r requirements.txt
 
+# Executa o script Python de limpesa de dados
+python3 src/db/data_cleanner.py
+
 # Executa o script Python
 echo "Executando o script Python..."
 python3 src/db/ouro_amonia_agro.py

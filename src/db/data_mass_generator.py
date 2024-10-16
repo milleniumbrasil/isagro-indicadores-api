@@ -4,7 +4,7 @@ from datetime import datetime
 from db_utils import get_db_connection, insert_record, print_test_results
 import random
 
-def generate_data_for_indicator(indicator, num_records):
+def generate_data_for_indicator(indicator, total_records, batch_size=100000):
     try:
         # Conectando ao banco de dados
         conn = get_db_connection()
@@ -19,20 +19,31 @@ def generate_data_for_indicator(indicator, num_records):
         }
         source = 'ISAgro'
 
-        for _ in range(num_records):
-            state = random.choice(states)
-            label = random.choice(labels_by_indicator.get(indicator, ['Desconhecido']))
-            value = round(random.uniform(100, 10000), 2)
-            date = datetime.strptime(f'{random.randint(2010, 2023)}-{random.randint(1, 12)}-01', '%Y-%m-%d').date()
+        total_generated = 0
+        batches_completed = 0
 
-            # Insere um novo registro fictício
-            insert_record(cursor, 'BR', state, '', source, date, label, value, indicator)
+        while total_generated < total_records:
+            batch_count = min(batch_size, total_records - total_generated)
+            print(f"Gerando {batch_count} registros para o indicador {indicator} (Batch {batches_completed + 1})...")
 
-        # Confirmando a transação
-        conn.commit()
+            for _ in range(batch_count):
+                state = random.choice(states)
+                label = random.choice(labels_by_indicator.get(indicator, ['Desconhecido']))
+                value = round(random.uniform(100, 10000), 2)
+                date = datetime.strptime(f'{random.randint(2010, 2023)}-{random.randint(1, 12)}-01', '%Y-%m-%d').date()
 
-        # Verificando os registros inseridos
-        print_test_results(cursor, f"Gerado {num_records} registros para o indicador {indicator}")
+                # Insere um novo registro fictício
+                insert_record(cursor, 'BR', state, '', source, date, label, value, indicator)
+
+            # Confirmando a transação
+            conn.commit()
+            total_generated += batch_count
+            batches_completed += 1
+
+            # Verificando os registros inseridos
+            print_test_results(cursor, f"Gerado {total_generated}/{total_records} registros para o indicador {indicator}")
+
+        print(f"\nGeração concluída: {total_generated} registros gerados para o indicador {indicator}.")
 
     except Exception as error:
         print(f"Erro durante a geração de dados: {error}")
