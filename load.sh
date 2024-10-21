@@ -41,10 +41,10 @@ python3 src/db/update_state.py
 python3 src/db/update_countries.py
 
 # Gera dados fictícios para os indicadores
-echo "Gerando massa de dados fictícia..."
-python3 src/db/data_mass_generator.py NPK 1000000
-python3 src/db/data_mass_generator.py GEE 1000000
-python3 src/db/data_mass_generator.py NH3 1000000
+# echo "Gerando massa de dados fictícia..."
+# python3 src/db/data_mass_generator.py NPK 1000000
+# python3 src/db/data_mass_generator.py GEE 1000000
+# python3 src/db/data_mass_generator.py NH3 1000000
 
 # Desativa o ambiente virtual
 echo "Desativando ambiente virtual..."
