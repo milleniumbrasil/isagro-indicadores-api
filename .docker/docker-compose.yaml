@@ -29,9 +29,14 @@ services:
       POSTGRES_DB: postgres
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
+      PGBACKUP_FILE: /pgrestore/isagro.backup
     volumes:
-      - pgdata:/var/lib/postgresql/data
-      - ../init.sql:/docker-entrypoint-initdb.d/init.sql
+      # - ../init.sql:/docker-entrypoint-initdb.d/init.sql
+      # Descomente o item abaixo para habilitar a persistencia do banco de dados em volume separado.
+      # - pgdata:/var/lib/postgresql/data
+      # Comente os itens abaixo para NÃO fazer o restore do banco
+      - ./scripts/restoredb.sh:/docker-entrypoint-initdb.d/restoredb.sh:ro
+      - ./dumps:/pgrestore
     ports:
       - "5432:5432"
     healthcheck:
