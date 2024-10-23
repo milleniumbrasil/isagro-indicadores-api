@@ -20,6 +20,9 @@ source venv/bin/activate
 echo "Instalando dependências..."
 pip install -r requirements.txt
 
+# Executa o script Python de limpesa de dados
+python3 src/db/data_cleanner.py
+
 # Executa o script Python
 echo "Executando o script Python..."
 python3 src/db/ouro_amonia_agro.py
@@ -36,6 +39,12 @@ python3 src/db/ouro_npk_producao_agricola.py
 python3 src/db/ouro_npk_sementes.py
 python3 src/db/update_state.py
 python3 src/db/update_countries.py
+
+# Gera dados fictícios para os indicadores
+echo "Gerando massa de dados fictícia..."
+python3 src/db/data_mass_generator.py NPK 1000000
+python3 src/db/data_mass_generator.py GEE 1000000
+python3 src/db/data_mass_generator.py NH3 1000000
 
 # Desativa o ambiente virtual
 echo "Desativando ambiente virtual..."
